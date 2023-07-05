@@ -15,8 +15,11 @@ public class EntrustPlugin extends Plugin {
     public void echo(PluginCall call) {
         String value = call.getString("value");
 
+        System.out.println("valor que se le pasa al plugin -> " + value);
+
         JSObject ret = new JSObject();
-        ret.put("value", implementation.echo(value));
+        // ret.put("value", implementation.echo(value));
+        ret.put("value", "valor devuelto desde el plugin android");
         call.resolve(ret);
     }
 }
