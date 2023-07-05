@@ -1,6 +1,6 @@
 {
   "name": "entrust-cu",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "plugin para entrust",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
