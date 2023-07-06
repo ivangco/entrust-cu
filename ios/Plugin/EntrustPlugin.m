@@ -6,3 +6,4 @@
 CAP_PLUGIN(EntrustPlugin, "Entrust",
            CAP_PLUGIN_METHOD(echo, CAPPluginReturnPromise);
 )
+
