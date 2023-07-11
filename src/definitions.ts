@@ -1,3 +1,3 @@
 export interface EntrustPlugin {
-  echo(options: { value: string }): Promise<{ value: string }>;
+  echo(options: { serialNumber: string, activationCode:string }): Promise<{ value: string }>;
 }
