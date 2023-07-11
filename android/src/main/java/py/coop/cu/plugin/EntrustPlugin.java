@@ -1,29 +1,37 @@
 package py.coop.cu.plugin;
 
-import com.entrust.identityGuard.mobile.sdk.Identity;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
+import py.coop.cu.entrust.CreateIdentity;
+
 @CapacitorPlugin(name = "Entrust")
 public class EntrustPlugin extends Plugin {
-
-    Identity identity = new Identity();
 
     private Entrust implementation = new Entrust();
 
     @PluginMethod
     public void echo(PluginCall call) {
-        String value = call.getString("value");
+        String serialNumber = call.getString("serialNumber");
+        String activationCode = call.getString("activationCode");
 
-        System.out.println("valor que se le pasa al plugin -> " + value);
-        System.out.println("device id -> " + identity.getDeviceId());
+        CreateIdentity createIdentity = new CreateIdentity();
+
+        System.out.println("serialNumber -> " + serialNumber);
+        System.out.println("activationCode -> " + activationCode);
+
+        String url = "universitaria.us.trustedauth.com/api/mobile";
+//        String url = "https://universitaria.us.trustedauth.com:8445/igst";
+//        String url = "https://universitaria:8445/igst";
+
+        createIdentity.createNewSoftTokenIdentityOnline(serialNumber, activationCode, url);
 
         JSObject ret = new JSObject();
 //         ret.put("value", implementation.echo(value));
-        ret.put("value", identity.getDeviceId());
+        ret.put("value", "valor retornado desde plugin");
         call.resolve(ret);
     }
 }
