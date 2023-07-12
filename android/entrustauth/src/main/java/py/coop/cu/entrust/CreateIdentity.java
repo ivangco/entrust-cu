@@ -22,9 +22,9 @@ public class CreateIdentity {
 
     public static void initialize(Context context) {
 
-        PlatformDelegate.setApplicationId("991a6af3-c4e8-4134-88eb-dbae52c0e363");
-        PlatformDelegate.setApplicationVersion("1.0.0");
-        PlatformDelegate.setApplicationScheme("entrustcu");
+        PlatformDelegate.setApplicationId("io.ionic.starter");
+        PlatformDelegate.setApplicationVersion("1.0");
+        PlatformDelegate.setApplicationScheme("http");
 
         PlatformDelegate.initialize(context);
         ThirdPartyTokenManagerFactory.setContext(context);
@@ -32,23 +32,54 @@ public class CreateIdentity {
 
     /**
      * Parses the parameters out of the app-specific link that launched
-     the
+     * the
      * app.
      */
     public static void parseLaunchUrlParameters(Intent intent) {
 
-        String mAddress;
-        String mSerialNumber;
-        String mRegPassword;
+        String mAddress = "";
+        String mSerialNumber = "";
+        String mRegPassword = "";
 
-        LaunchUrlParams params = PlatformDelegate.parseLaunchUrl(intent);
-        if(params instanceof ActivationLaunchUrlParams) {
-            mAddress = ((ActivationLaunchUrlParams)
-                    params).getRegistrationUrl();
-            mSerialNumber = ((ActivationLaunchUrlParams)
-                    params).getSerialNumber();
-            mRegPassword = ((ActivationLaunchUrlParams)
-                    params).getRegistrationPassword();
+        System.out.println("parseLaunchUrlParameters...");
+
+        try {
+            LaunchUrlParams params = PlatformDelegate.parseLaunchUrl(intent);
+
+            System.out.println("params instanceof ActivationLaunchUrlParams -> " + (params instanceof ActivationLaunchUrlParams));
+
+            System.out.println("get action -> " + params.getAction());
+            System.out.println("get scheme -> " + params.getScheme());
+
+            if (params instanceof ActivationLaunchUrlParams) {
+                mAddress = ((ActivationLaunchUrlParams)
+                        params).getRegistrationUrl();
+
+                mAddress = "https://" + mAddress;
+
+                mSerialNumber = ((ActivationLaunchUrlParams)
+                        params).getSerialNumber();
+                mRegPassword = ((ActivationLaunchUrlParams)
+                        params).getRegistrationPassword();
+
+                System.out.println("mAddress -> " + mAddress);
+                System.out.println("mSerialNumber -> " + mSerialNumber);
+                System.out.println("mRegPassword -> " + mRegPassword);
+
+                Identity identity = createIdentity(mSerialNumber, mAddress, mRegPassword);
+                if(identity != null){
+                    System.out.println("identitiy - json " + identity.toJSON().toString());
+                }else{
+                    System.out.println("no se creo el identity");
+                }
+
+
+            }
+
+        } catch (IdentityGuardMobileException ex) {
+            ex.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -95,7 +126,6 @@ public class CreateIdentity {
 
             System.out.println("registration code -> " + identity.getRegistrationCode());
             System.out.println("identity - device id -> " + identity.getIdentityId());
-            System.out.println("identitiy - json " + identity.toJSON().toString());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -130,6 +160,9 @@ public class CreateIdentity {
             String serialNumber,
             String activationCode,
             String url) {
+
+        System.out.println("url -> " + url);
+
         // Use the existing method to create a new soft token.
         Identity identity = createNewSoftTokenIdentity(
                 serialNumber, activationCode);
@@ -145,6 +178,12 @@ public class CreateIdentity {
             // TransactionProvider provides methods to communicate
             // with the Transaction component.
             TransactionProvider provider = new TransactionProvider(url);
+
+            // se cargan valores de prueba
+            identity.setAllowUnsecuredDevice(true);
+            identity.setPINRequired(false);
+
+            System.out.println("identitiy - json " + identity.toJSON().toString());
 
             Boolean response = provider.register(PlatformDelegate.getCommCallback(),
                     getDeviceId(), false, true, true, true, identity);
@@ -166,6 +205,8 @@ public class CreateIdentity {
 
         } catch (IdentityGuardMobileException ex) {
             ex.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         // The returned identity should be saved by the application.
@@ -178,7 +219,7 @@ public class CreateIdentity {
      * <p>
      * This should be run on a background thread/task.
      */
-    private Identity createIdentity(String mSerialNumber, String mAddress, String mRegPassword) {
+    private static Identity createIdentity(String mSerialNumber, String mAddress, String mRegPassword) {
         try {
             IdentityProvider.validateSerialNumber(mSerialNumber);
             TransactionProvider tp = new TransactionProvider(mAddress);
@@ -193,6 +234,7 @@ public class CreateIdentity {
             boolean supportsOfflineTransactions = true;
 
             String deviceId = getDeviceId();
+
             return tp.createIdentityUsingRegPassword(PlatformDelegate.getCommCallback(),
                     mRegPassword, mSerialNumber, deviceId, supportsNotifications,
                     supportsTransactions, supportsOnlineTransactions,
@@ -208,7 +250,7 @@ public class CreateIdentity {
         return null;
     }
 
-    private String getDeviceId() {
+    private static String getDeviceId() {
         // To register with the transaction component just
         // requires a non-null identifier. A real identifier -
         // such as a device PIN on BlackBerry or the registration_id

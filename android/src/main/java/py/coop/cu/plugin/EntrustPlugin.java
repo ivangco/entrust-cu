@@ -24,10 +24,20 @@ public class EntrustPlugin extends Plugin {
         System.out.println("activationCode -> " + activationCode);
 
         String url = "universitaria.us.trustedauth.com/api/mobile";
+//        String url = "https://universitaria.us.trustedauth.com/api/mobile/txnpoll";
 //        String url = "https://universitaria.us.trustedauth.com:8445/igst";
-//        String url = "https://universitaria:8445/igst";
+//        String url = "https://universitaria.us.trustedauth.com/igst";
 
-        createIdentity.createNewSoftTokenIdentityOnline(serialNumber, activationCode, url);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("corre un nuevo hilo para crear identity...");
+                createIdentity.createNewSoftTokenIdentityOnline(serialNumber, activationCode, url);
+                // Puedes realizar acciones adicionales con la identidad creada aquí
+            }
+        }).start();
+
+//        createIdentity.createNewSoftTokenIdentityOnline(serialNumber, activationCode, url);
 
         JSObject ret = new JSObject();
 //         ret.put("value", implementation.echo(value));
