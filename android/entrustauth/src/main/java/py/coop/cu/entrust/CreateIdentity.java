@@ -2,32 +2,81 @@ package py.coop.cu.entrust;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
 
 import com.entrust.identityGuard.mobile.sdk.ActivationLaunchUrlParams;
 import com.entrust.identityGuard.mobile.sdk.CommCallback;
 import com.entrust.identityGuard.mobile.sdk.CommRequest;
 import com.entrust.identityGuard.mobile.sdk.CommResult;
+import com.entrust.identityGuard.mobile.sdk.EncodingUtils;
 import com.entrust.identityGuard.mobile.sdk.Identity;
 import com.entrust.identityGuard.mobile.sdk.IdentityProvider;
 import com.entrust.identityGuard.mobile.sdk.LaunchUrlParams;
+import com.entrust.identityGuard.mobile.sdk.OfflineTransactionUrlParams;
 import com.entrust.identityGuard.mobile.sdk.PlatformDelegate;
+import com.entrust.identityGuard.mobile.sdk.SecureOfflineActivationUrlParams;
 import com.entrust.identityGuard.mobile.sdk.TransactionProvider;
 import com.entrust.identityGuard.mobile.sdk.exception.IdentityGuardMobileException;
+import com.entrust.identityGuard.mobile.sdk.exception.InvalidLaunchLinkException;
 import com.entrust.identityGuard.mobile.sdk.tokenproviders.ThirdPartyTokenManagerFactory;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.Random;
 
 public class CreateIdentity {
 
     public static void initialize(Context context) {
-
         PlatformDelegate.setApplicationId("io.ionic.starter");
         PlatformDelegate.setApplicationVersion("1.0");
         PlatformDelegate.setApplicationScheme("http");
 
         PlatformDelegate.initialize(context);
         ThirdPartyTokenManagerFactory.setContext(context);
+    }
+
+    public static Boolean activateTokenByQr(String uri) {
+        Uri uriFromQrCode = Uri.parse(uri);
+
+        System.out.println("URI recibido -> " + uri);
+
+        if (uriFromQrCode != null &&
+                uriFromQrCode.getQueryParameterNames() != null) {
+            Intent qrCodeIntent = new Intent();
+            qrCodeIntent.setData(uriFromQrCode);
+            try {
+
+                LaunchUrlParams params = PlatformDelegate.parseLaunchUrl(
+                        qrCodeIntent);
+
+                System.out.println("params -> " + params.toJSON().toString());
+
+                if (params instanceof OfflineTransactionUrlParams) {
+                // Handle the offline transaction
+                // "10.8 Initiating and confirming an offline transaction"
+                    System.out.println("instance of offlineTransactionUrlParams");
+                } else if (params instanceof SecureOfflineActivationUrlParams) {
+                // Handle the offline activation
+                // "10.4 Creating a new soft token identity (offline mode)"
+                    System.out.println("Instance of secureOfflineActivationUrlParams");
+
+                } else {
+                // Unknown QR code link, show error.
+                    System.out.println("Unknown qr code link");
+                }
+            } catch (InvalidLaunchLinkException e) {
+            // Display an error message to the user.
+                e.printStackTrace();
+            } catch (IdentityGuardMobileException e) {
+            // Display an error message to the user.
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 
     /**
@@ -55,8 +104,6 @@ public class CreateIdentity {
                 mAddress = ((ActivationLaunchUrlParams)
                         params).getRegistrationUrl();
 
-                mAddress = "https://" + mAddress;
-
                 mSerialNumber = ((ActivationLaunchUrlParams)
                         params).getSerialNumber();
                 mRegPassword = ((ActivationLaunchUrlParams)
@@ -66,14 +113,7 @@ public class CreateIdentity {
                 System.out.println("mSerialNumber -> " + mSerialNumber);
                 System.out.println("mRegPassword -> " + mRegPassword);
 
-                Identity identity = createIdentity(mSerialNumber, mAddress, mRegPassword);
-                if(identity != null){
-                    System.out.println("identitiy - json " + identity.toJSON().toString());
-                }else{
-                    System.out.println("no se creo el identity");
-                }
-
-
+                createIdentity(mSerialNumber, mAddress, mRegPassword);
             }
 
         } catch (IdentityGuardMobileException ex) {
@@ -213,16 +253,37 @@ public class CreateIdentity {
 //        return identity;
     }
 
+    private static Identity createIdentityFromJson(String jsonIdentity){
+        return EncodingUtils.decodeIdentity(jsonIdentity);
+    }
+
+    public static String getOTP(String jsonIdentity){
+        Identity identity = createIdentityFromJson(jsonIdentity);
+        try {
+
+            Log.i("getOTP","otp -> " + identity.getOTP());
+
+            return identity.getOTP();
+        } catch (IdentityGuardMobileException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     /**
      * Creates the new identity from using the serial number and
      * registration password provided.
      * <p>
      * This should be run on a background thread/task.
      */
-    private static Identity createIdentity(String mSerialNumber, String mAddress, String mRegPassword) {
+    public static String createIdentity(String mSerialNumber, String mAddress, String mRegPassword) {
         try {
+
+            mAddress = "https://" + mAddress;
+
             IdentityProvider.validateSerialNumber(mSerialNumber);
             TransactionProvider tp = new TransactionProvider(mAddress);
+
             // For the purposes of this sample we will disable notifications and
             // enable transactions.
             boolean supportsNotifications = false;
@@ -235,10 +296,27 @@ public class CreateIdentity {
 
             String deviceId = getDeviceId();
 
-            return tp.createIdentityUsingRegPassword(PlatformDelegate.getCommCallback(),
+            Identity identity = tp.createIdentityUsingRegPassword(PlatformDelegate.getCommCallback(),
                     mRegPassword, mSerialNumber, deviceId, supportsNotifications,
                     supportsTransactions, supportsOnlineTransactions,
                     supportsOfflineTransactions);
+
+            if (identity != null) {
+                Log.i("createIdentityQuick","identitiy - json " + identity.toJSON().toString());
+
+                TransactionProvider transactionProvider = new TransactionProvider(mAddress);
+                transactionProvider.getNewSeed(PlatformDelegate.getCommCallback(), identity);
+
+                String otp = identity.getOTP();
+
+                System.out.println("new otp -> " + otp);
+
+                return identity.toJSON().toString();
+
+            } else {
+                Log.i("createIdentityQuick","no se creo el identity");
+                return "";
+            }
 
         } catch (IdentityGuardMobileException e) {
             e.printStackTrace();
@@ -247,7 +325,7 @@ public class CreateIdentity {
             e.printStackTrace();
             // Display error message indicating invalid serial number.
         }
-        return null;
+        return "";
     }
 
     private static String getDeviceId() {
