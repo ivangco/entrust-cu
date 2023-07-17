@@ -1,5 +1,9 @@
 package py.coop.cu.plugin;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
+
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -14,34 +18,44 @@ public class EntrustPlugin extends Plugin {
     private Entrust implementation = new Entrust();
 
     @PluginMethod
-    public void echo(PluginCall call) {
+    public void activateTokenQr(PluginCall call) {
+
+        String uri = call.getString("uri");
+        Boolean response = CreateIdentity.activateTokenByQr(uri);
+
+        JSObject ret = new JSObject();
+        ret.put("value", response);
+        call.resolve();
+
+    }
+
+    @PluginMethod
+    public void getTokenOTP(PluginCall call) {
+        String jsonIdentity = call.getString("jsonIdentity");
+        String generatedOTP = CreateIdentity.getOTP(jsonIdentity);
+        JSObject ret = new JSObject();
+        ret.put("otp", generatedOTP);
+        call.resolve(ret);
+    }
+
+    @PluginMethod
+    public void activateTokenQuick(PluginCall call) {
         String serialNumber = call.getString("serialNumber");
-        String activationCode = call.getString("activationCode");
-
-        CreateIdentity createIdentity = new CreateIdentity();
-
-        System.out.println("serialNumber -> " + serialNumber);
-        System.out.println("activationCode -> " + activationCode);
-
-        String url = "universitaria.us.trustedauth.com/api/mobile";
-//        String url = "https://universitaria.us.trustedauth.com/api/mobile/txnpoll";
-//        String url = "https://universitaria.us.trustedauth.com:8445/igst";
-//        String url = "https://universitaria.us.trustedauth.com/igst";
+        String regAddress = call.getString("regAddress");
+        String regPassword = call.getString("regPassword");
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println("corre un nuevo hilo para crear identity...");
-                createIdentity.createNewSoftTokenIdentityOnline(serialNumber, activationCode, url);
-                // Puedes realizar acciones adicionales con la identidad creada aquí
+                Log.i("activateTokenQuick", "corre nuevo hilo para crear el identity");
+                String jsonData = CreateIdentity.createIdentity(serialNumber, regAddress, regPassword);
+                Log.i("activateTokenQuick", jsonData);
+
+                JSObject ret = new JSObject();
+                ret.put("data", jsonData);
+                call.resolve(ret);
             }
         }).start();
 
-//        createIdentity.createNewSoftTokenIdentityOnline(serialNumber, activationCode, url);
-
-        JSObject ret = new JSObject();
-//         ret.put("value", implementation.echo(value));
-        ret.put("value", "valor retornado desde plugin");
-        call.resolve(ret);
     }
 }
