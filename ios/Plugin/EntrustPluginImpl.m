@@ -5,7 +5,6 @@
 #import "ETSoftTokenSDK.h"
 #import "ETIdentityProvider.h"
 
-
 // Define the plugin using the CAP_PLUGIN Macro, and
 // each method the plugin supports using the CAP_PLUGIN_METHOD macro.
 CAP_PLUGIN(EntrustPlugin, "Entrust",
@@ -55,10 +54,13 @@ CAP_PLUGIN(EntrustPlugin, "Entrust",
         NSLog(@"identity creado: %@", identity);
         
         @try {
+            
+            // Convertir el objeto NSData a una cadena Base64
+            NSString *base64String = [identity.seed base64EncodedStringWithOptions:0];
         
             // 1. Convertir el objeto ETIdentity a un diccionario
             NSDictionary *identityDictionary = @{
-//                @"seed": identity.seed,
+                @"seed": base64String,
                 @"identityId": nonNullValue(identity.identityId, @""),
                 @"deviceId": nonNullValue(identity.deviceId, @""),
                 @"serialNumber": nonNullValue(identity.serialNumber, @""),
@@ -72,7 +74,8 @@ CAP_PLUGIN(EntrustPlugin, "Entrust",
                 @"securityPolicyEnabled": @(identity.securityPolicyEnabled),
                 @"allowUnsecuredDevice": @(identity.allowUnsecuredDevice),
                 @"isPreviousAPI": @(identity.isPreviousAPI),
-                @"allowFaceRecognition": nonNullValue(identity.allowFaceRecognition, @NO)
+                @"allowFaceRecognition": nonNullValue(identity.allowFaceRecognition, @NO),
+                @"transactionUrl": regAddress
             };
             
             // 2. Convertir el diccionario a JSON
@@ -145,9 +148,13 @@ static id nonNullValue(id value, id defaultValue) {
     if (!identityDictionary) {
         NSLog(@"Error al decodificar JSON: %@", error.localizedDescription);
     } else {
+        
+        // Obtener el objeto NSData original a partir de la cadena Base64
+        NSData *originalData = [[NSData alloc] initWithBase64EncodedString:identityDictionary[@"seed"] options:0];
+        
         // 3. Crear un nuevo objeto ETIdentity utilizando el diccionario
         ETIdentity *newIdentity = [[ETIdentity alloc] init];
-//        newIdentity.seed = identityDictionary[@"seed"];
+        newIdentity.seed = originalData;
         newIdentity.identityId = identityDictionary[@"identityId"];
         newIdentity.deviceId = identityDictionary[@"deviceId"];
         newIdentity.serialNumber = identityDictionary[@"serialNumber"];
@@ -166,7 +173,6 @@ static id nonNullValue(id value, id defaultValue) {
         // Ahora "newIdentity" contiene el objeto ETIdentity reconstruido desde el JSON.
         
         if (newIdentity.allowUnsecuredDevice || [ETSoftTokenSDK isDeviceSecure]) {
-                        
             data = [newIdentity getOTP:[NSDate date]];
         }
         
