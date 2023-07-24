@@ -10,6 +10,7 @@
 CAP_PLUGIN(EntrustPlugin, "Entrust",
            CAP_PLUGIN_METHOD(activateTokenQuick, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getTokenOTP, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(initializeSDK, CAPPluginReturnPromise);
            )
 
 @implementation CreateIdentityQuickOnline
@@ -199,6 +200,29 @@ static id nonNullValue(id value, id defaultValue) {
 //    }
     
     return data;
+}
+
++ (NSData *) encryptIdentity:(ETIdentity *)identity {
+    // Assumes [ETSoftTokenSDK initializeSDK] has been called
+    // during application start up.
+    
+    NSData *serialized = [NSKeyedArchiver
+                          archivedDataWithRootObject:identity];
+    return [ETSoftTokenSDK encryptData:serialized];
+    
+}
+
++ (ETIdentity *) decryptIdentity:(NSData *)encrypted{
+ // Assumes [ETSoftTokenSDK initializeSDK] has been called
+ // during application start up.
+
+ NSData *serialized = [ETSoftTokenSDK decryptData:encrypted];
+ return [NSKeyedUnarchiver unarchiveObjectWithData:serialized];
+}
+
++ (BOOL) initializeSDK{
+    BOOL wasReset = [ETSoftTokenSDK initializeSDK];
+    return wasReset;
 }
 
 @end

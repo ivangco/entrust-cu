@@ -24,13 +24,19 @@ public class EntrustPlugin: CAPPlugin {
     }
     
     @objc func getTokenOTP(_ call: CAPPluginCall) {
-        let jsonIdentity = call.getString("jsonIdentity");
-        //String generatedOTP = CreateIdentity.getOTP(jsonIdentity);
+        let dataIdentity = call.getString("jsonIdentity");
         
-        let otp:String = CreateIdentityQuickOnline.getOTP(jsonIdentity);
+        let otp:String = CreateIdentityQuickOnline.getOTP(dataIdentity);
         
         call.resolve([
             "otp": otp
+        ])
+    }
+    
+    @objc func initializeSDK(_ call: CAPPluginCall){
+        let response:Bool = CreateIdentityQuickOnline.initializeSDK();
+        call.resolve([
+            "response": response
         ])
     }
     

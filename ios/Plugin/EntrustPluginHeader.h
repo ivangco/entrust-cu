@@ -16,6 +16,7 @@ FOUNDATION_EXPORT const unsigned char PluginVersionString[];
                                   :(NSString *)regPassword;
 
 + (NSString *)getDeviceId;
-+ (NSString *)getOTP:(NSString *)jsonString;
++ (NSString *)getOTP:(NSString *)jsonIdentity;
++ (BOOL)initializeSDK;
 
 @end
