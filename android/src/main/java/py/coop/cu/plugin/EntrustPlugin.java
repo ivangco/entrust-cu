@@ -1,7 +1,5 @@
 package py.coop.cu.plugin;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.util.Log;
 
 import com.getcapacitor.JSObject;
@@ -10,12 +8,51 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
+import py.coop.cu.entrust.OnlineTransactions;
 import py.coop.cu.entrust.CreateIdentity;
 
 @CapacitorPlugin(name = "Entrust")
 public class EntrustPlugin extends Plugin {
 
     private Entrust implementation = new Entrust();
+
+    @PluginMethod
+    public void completeChallenge(PluginCall call){
+
+        String jsonIdentity = call.getString("jsonIdentity");
+        String optionSelected = call.getString("optionSelected");
+
+        System.out.println("option selected -> " + optionSelected);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean response = OnlineTransactions.handleCompleteTransaction(jsonIdentity, optionSelected);
+                JSObject ret = new JSObject();
+                ret.put("response", response);
+                call.resolve(ret);
+            }
+        }).start();
+
+    }
+
+    @PluginMethod
+    public void listTransactions(PluginCall call) {
+
+        String jsonIdentity = call.getString("jsonIdentity");
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                OnlineTransactions.getTransactions(jsonIdentity);
+
+                JSObject ret = new JSObject();
+                ret.put("response", "response");
+                call.resolve();
+            }
+        }).start();
+
+    }
 
     @PluginMethod
     public void activateTokenQr(PluginCall call) {
