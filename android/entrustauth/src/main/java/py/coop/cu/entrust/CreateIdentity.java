@@ -6,9 +6,6 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.entrust.identityGuard.mobile.sdk.ActivationLaunchUrlParams;
-import com.entrust.identityGuard.mobile.sdk.CommCallback;
-import com.entrust.identityGuard.mobile.sdk.CommRequest;
-import com.entrust.identityGuard.mobile.sdk.CommResult;
 import com.entrust.identityGuard.mobile.sdk.EncodingUtils;
 import com.entrust.identityGuard.mobile.sdk.Identity;
 import com.entrust.identityGuard.mobile.sdk.IdentityProvider;
@@ -21,9 +18,6 @@ import com.entrust.identityGuard.mobile.sdk.exception.IdentityGuardMobileExcepti
 import com.entrust.identityGuard.mobile.sdk.exception.InvalidLaunchLinkException;
 import com.entrust.identityGuard.mobile.sdk.tokenproviders.ThirdPartyTokenManagerFactory;
 
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 import java.util.Random;
 
 public class CreateIdentity {
@@ -253,7 +247,7 @@ public class CreateIdentity {
 //        return identity;
     }
 
-    private static Identity createIdentityFromJson(String jsonIdentity){
+    public static Identity createIdentityFromJson(String jsonIdentity){
         return EncodingUtils.decodeIdentity(jsonIdentity);
     }
 
