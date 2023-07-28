@@ -16,7 +16,11 @@ npx cap sync
 * [`activateTokenQuick(...)`](#activatetokenquick)
 * [`getTokenOTP(...)`](#gettokenotp)
 * [`activateTokenQr(...)`](#activatetokenqr)
+* [`initializeSDK()`](#initializesdk)
+* [`listTransactions(...)`](#listtransactions)
+* [`completeChallenge(...)`](#completechallenge)
 * [Interfaces](#interfaces)
+* [Type Aliases](#type-aliases)
 
 </docgen-index>
 
@@ -26,12 +30,12 @@ npx cap sync
 ### activateTokenQuick(...)
 
 ```typescript
-activateTokenQuick(options: PluginParams) => Promise<{ data: string; }>
+activateTokenQuick(param: ActivationParams) => Promise<{ data: string; }>
 ```
 
-| Param         | Type                                                  |
-| ------------- | ----------------------------------------------------- |
-| **`options`** | <code><a href="#pluginparams">PluginParams</a></code> |
+| Param       | Type                                                          |
+| ----------- | ------------------------------------------------------------- |
+| **`param`** | <code><a href="#activationparams">ActivationParams</a></code> |
 
 **Returns:** <code>Promise&lt;{ data: string; }&gt;</code>
 
@@ -41,12 +45,12 @@ activateTokenQuick(options: PluginParams) => Promise<{ data: string; }>
 ### getTokenOTP(...)
 
 ```typescript
-getTokenOTP(options: { jsonIdentity: string; }) => Promise<{ otp: string; }>
+getTokenOTP(data: { jsonIdentity: string; }) => Promise<{ otp: string; }>
 ```
 
-| Param         | Type                                   |
-| ------------- | -------------------------------------- |
-| **`options`** | <code>{ jsonIdentity: string; }</code> |
+| Param      | Type                                   |
+| ---------- | -------------------------------------- |
+| **`data`** | <code>{ jsonIdentity: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ otp: string; }&gt;</code>
 
@@ -68,16 +72,73 @@ activateTokenQr({ uri }: { uri: string; }) => Promise<{ value: string; }>
 --------------------
 
 
+### initializeSDK()
+
+```typescript
+initializeSDK() => Promise<{ response: boolean; }>
+```
+
+**Returns:** <code>Promise&lt;{ response: boolean; }&gt;</code>
+
+--------------------
+
+
+### listTransactions(...)
+
+```typescript
+listTransactions(options: { jsonIdentity: string; }) => Promise<{ response: string; }>
+```
+
+| Param         | Type                                   |
+| ------------- | -------------------------------------- |
+| **`options`** | <code>{ jsonIdentity: string; }</code> |
+
+**Returns:** <code>Promise&lt;{ response: string; }&gt;</code>
+
+--------------------
+
+
+### completeChallenge(...)
+
+```typescript
+completeChallenge(option: CompleteParams) => Promise<{ response: boolean; }>
+```
+
+| Param        | Type                                                      |
+| ------------ | --------------------------------------------------------- |
+| **`option`** | <code><a href="#completeparams">CompleteParams</a></code> |
+
+**Returns:** <code>Promise&lt;{ response: boolean; }&gt;</code>
+
+--------------------
+
+
 ### Interfaces
 
 
-#### PluginParams
+#### ActivationParams
 
 | Prop               | Type                |
 | ------------------ | ------------------- |
 | **`serialNumber`** | <code>string</code> |
 | **`regAddress`**   | <code>string</code> |
 | **`regPassword`**  | <code>string</code> |
+
+
+#### CompleteParams
+
+| Prop                 | Type                                                        |
+| -------------------- | ----------------------------------------------------------- |
+| **`jsonIdentity`**   | <code>string</code>                                         |
+| **`optionSelected`** | <code><a href="#completeoptions">CompleteOptions</a></code> |
+
+
+### Type Aliases
+
+
+#### CompleteOptions
+
+<code>"CANCEL" | "CONFIRM"</code>
 
 </docgen-api>
 
