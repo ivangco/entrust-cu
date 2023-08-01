@@ -19,6 +19,7 @@ npx cap sync
 * [`initializeSDK()`](#initializesdk)
 * [`listTransactions(...)`](#listtransactions)
 * [`completeChallenge(...)`](#completechallenge)
+* [`getDeviceFingerprint()`](#getdevicefingerprint)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -113,6 +114,17 @@ completeChallenge(option: CompleteParams) => Promise<{ response: boolean; }>
 --------------------
 
 
+### getDeviceFingerprint()
+
+```typescript
+getDeviceFingerprint() => Promise<{ response: DeviceFingerprint; }>
+```
+
+**Returns:** <code>Promise&lt;{ response: <a href="#devicefingerprint">DeviceFingerprint</a>; }&gt;</code>
+
+--------------------
+
+
 ### Interfaces
 
 
@@ -131,6 +143,36 @@ completeChallenge(option: CompleteParams) => Promise<{ response: boolean; }>
 | -------------------- | ----------------------------------------------------------- |
 | **`jsonIdentity`**   | <code>string</code>                                         |
 | **`optionSelected`** | <code><a href="#completeoptions">CompleteOptions</a></code> |
+
+
+#### DeviceFingerprint
+
+| Prop                        | Type                 |
+| --------------------------- | -------------------- |
+| **`simCountry`**            | <code>string</code>  |
+| **`appVersion`**            | <code>string</code>  |
+| **`screenWidth`**           | <code>number</code>  |
+| **`timezone`**              | <code>string</code>  |
+| **`locationAreaCode`**      | <code>number</code>  |
+| **`timezoneOffsetString`**  | <code>string</code>  |
+| **`locale`**                | <code>string</code>  |
+| **`deviceId`**              | <code>string</code>  |
+| **`connectionType`**        | <code>string</code>  |
+| **`platform`**              | <code>string</code>  |
+| **`manufacturer`**          | <code>string</code>  |
+| **`deviceUnsecure`**        | <code>boolean</code> |
+| **`carrierName`**           | <code>string</code>  |
+| **`osVersion`**             | <code>string</code>  |
+| **`timezoneOffset`**        | <code>number</code>  |
+| **`model`**                 | <code>string</code>  |
+| **`allowUnknownSources`**   | <code>boolean</code> |
+| **`mobileCountryCode`**     | <code>string</code>  |
+| **`mobileNetworkCode`**     | <code>string</code>  |
+| **`screenHeight`**          | <code>number</code>  |
+| **`cellId`**                | <code>string</code>  |
+| **`primaryScramblingCode`** | <code>number</code>  |
+| **`screenDensity`**         | <code>number</code>  |
+| **`btName`**                | <code>string</code>  |
 
 
 ### Type Aliases
