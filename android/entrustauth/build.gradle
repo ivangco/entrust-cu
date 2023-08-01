@@ -27,6 +27,8 @@ android {
 }
 
 dependencies {
-
     implementation files('libs/igmobile-sdk-android-4.1.0.1.aar')
+    implementation files('libs/IGRBADeviceFingerprintSDK-2.0.0-release.aar')
 }
+
+
