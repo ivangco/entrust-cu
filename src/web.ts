@@ -1,8 +1,12 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { EntrustPlugin, ActivationParams } from './definitions';
+import type { EntrustPlugin, ActivationParams, DeviceFingerprint } from './definitions';
 
 export class EntrustWeb extends WebPlugin implements EntrustPlugin {
+
+  getDeviceFingerprint(): Promise<{ response: DeviceFingerprint }> {
+    throw new Error('Method not implemented.');
+  }
   completeChallenge(): Promise<{ response: boolean; }> {
     throw new Error('Method not implemented.');
   }
