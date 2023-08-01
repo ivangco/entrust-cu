@@ -1,5 +1,6 @@
 package py.coop.cu.plugin;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.getcapacitor.JSObject;
@@ -15,6 +16,27 @@ import py.coop.cu.entrust.CreateIdentity;
 public class EntrustPlugin extends Plugin {
 
     private Entrust implementation = new Entrust();
+
+    @PluginMethod
+    public void initializeSDK(PluginCall call){
+        Context context = this.getActivity().getApplicationContext();
+        CreateIdentity.initialize(context);
+
+        JSObject ret = new JSObject();
+        ret.put("response", true);
+        call.resolve(ret);
+
+    }
+
+    @PluginMethod
+    public void getDeviceFingerprint(PluginCall call){
+        Context context = this.getActivity().getApplicationContext();
+        String deviceFingerprint = CreateIdentity.getDeviceFingerprint(context);
+
+        JSObject ret = new JSObject();
+        ret.put("response", deviceFingerprint);
+        call.resolve(ret);
+    }
 
     @PluginMethod
     public void completeChallenge(PluginCall call){

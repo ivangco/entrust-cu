@@ -17,18 +17,55 @@ import com.entrust.identityGuard.mobile.sdk.TransactionProvider;
 import com.entrust.identityGuard.mobile.sdk.exception.IdentityGuardMobileException;
 import com.entrust.identityGuard.mobile.sdk.exception.InvalidLaunchLinkException;
 import com.entrust.identityGuard.mobile.sdk.tokenproviders.ThirdPartyTokenManagerFactory;
+import com.entrust.identityGuard.rba.sdk.DeviceAttributeRegistry;
+import com.entrust.identityGuard.rba.sdk.DeviceFingerprint;
+import com.entrust.identityGuard.rba.sdk.attributes.DeviceAttribute;
 
+import org.json.JSONObject;
+
+import java.util.List;
 import java.util.Random;
 
 public class CreateIdentity {
 
     public static void initialize(Context context) {
-        PlatformDelegate.setApplicationId("io.ionic.starter");
-        PlatformDelegate.setApplicationVersion("1.0");
-        PlatformDelegate.setApplicationScheme("http");
+//        PlatformDelegate.setApplicationId("io.ionic.starter");
+//        PlatformDelegate.setApplicationVersion("1.0");
+//        PlatformDelegate.setApplicationScheme("http");
 
         PlatformDelegate.initialize(context);
         ThirdPartyTokenManagerFactory.setContext(context);
+
+
+    }
+
+    public static String getDeviceFingerprint(Context context) {
+
+        DeviceFingerprint deviceFingerprint = new DeviceFingerprint();
+        deviceFingerprint.init(context);
+
+        final DeviceAttributeRegistry registry =
+                DeviceAttributeRegistry.getInstance(context);
+
+        try {
+            List<DeviceAttribute> allAttributes =
+                    DeviceAttributeRegistry.getAllPossibleSdkSyncrhonousDeviceAttributes();
+            for (DeviceAttribute attribute : allAttributes) {
+                if (!registry.addCustomDeviceAttribute(attribute, true, false)) {
+                    Log.w("DeviceFingerprintSample",
+                            "Insufficient permissions for attribute: " + attribute.getName());
+                }
+            }
+
+            JSONObject data = deviceFingerprint.generateDeviceData();
+            return data.toString();
+
+        } catch (Exception e) {
+            Log.e("DeviceFingerprintSample", "Error occurred during initialization", e);
+        }
+
+        return "";
+
     }
 
     public static Boolean activateTokenByQr(String uri) {
@@ -48,23 +85,23 @@ public class CreateIdentity {
                 System.out.println("params -> " + params.toJSON().toString());
 
                 if (params instanceof OfflineTransactionUrlParams) {
-                // Handle the offline transaction
-                // "10.8 Initiating and confirming an offline transaction"
+                    // Handle the offline transaction
+                    // "10.8 Initiating and confirming an offline transaction"
                     System.out.println("instance of offlineTransactionUrlParams");
                 } else if (params instanceof SecureOfflineActivationUrlParams) {
-                // Handle the offline activation
-                // "10.4 Creating a new soft token identity (offline mode)"
+                    // Handle the offline activation
+                    // "10.4 Creating a new soft token identity (offline mode)"
                     System.out.println("Instance of secureOfflineActivationUrlParams");
 
                 } else {
-                // Unknown QR code link, show error.
+                    // Unknown QR code link, show error.
                     System.out.println("Unknown qr code link");
                 }
             } catch (InvalidLaunchLinkException e) {
-            // Display an error message to the user.
+                // Display an error message to the user.
                 e.printStackTrace();
             } catch (IdentityGuardMobileException e) {
-            // Display an error message to the user.
+                // Display an error message to the user.
                 e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -247,15 +284,15 @@ public class CreateIdentity {
 //        return identity;
     }
 
-    public static Identity createIdentityFromJson(String jsonIdentity){
+    public static Identity createIdentityFromJson(String jsonIdentity) {
         return EncodingUtils.decodeIdentity(jsonIdentity);
     }
 
-    public static String getOTP(String jsonIdentity){
+    public static String getOTP(String jsonIdentity) {
         Identity identity = createIdentityFromJson(jsonIdentity);
         try {
 
-            Log.i("getOTP","otp -> " + identity.getOTP());
+            Log.i("getOTP", "otp -> " + identity.getOTP());
 
             return identity.getOTP();
         } catch (IdentityGuardMobileException e) {
@@ -296,7 +333,7 @@ public class CreateIdentity {
                     supportsOfflineTransactions);
 
             if (identity != null) {
-                Log.i("createIdentityQuick","identitiy - json " + identity.toJSON().toString());
+                Log.i("createIdentityQuick", "identitiy - json " + identity.toJSON().toString());
 
                 TransactionProvider transactionProvider = new TransactionProvider(mAddress);
                 transactionProvider.getNewSeed(PlatformDelegate.getCommCallback(), identity);
@@ -308,7 +345,7 @@ public class CreateIdentity {
                 return identity.toJSON().toString();
 
             } else {
-                Log.i("createIdentityQuick","no se creo el identity");
+                Log.i("createIdentityQuick", "no se creo el identity");
                 return "";
             }
 
