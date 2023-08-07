@@ -20,3 +20,10 @@ FOUNDATION_EXPORT const unsigned char PluginVersionString[];
 + (BOOL)initializeSDK;
 
 @end
+
+@interface OnlineTransaction : NSObject
+
++(BOOL) handleCompleteTransation:(NSString*) jsonIdentity
+               withResponse:(NSString*) response;
+
+@end
