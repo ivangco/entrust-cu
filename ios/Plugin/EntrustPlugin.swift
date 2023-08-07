@@ -9,6 +9,18 @@ import Capacitor
 public class EntrustPlugin: CAPPlugin {
     private let implementation = Entrust();
     
+    @objc func completeChallenge(_ call: CAPPluginCall) {
+        
+        let jsonIdentity = call.getString("jsonIdentity");
+        let optionSelected = call.getString("optionSelected");
+        
+        let result: Bool = OnlineTransaction.handleCompleteTransation(jsonIdentity, withResponse: optionSelected);
+
+        call.resolve([
+            "response": result
+        ])
+    }
+    
     @objc func activateTokenQuick(_ call: CAPPluginCall) {
         
         let serialNumber = call.getString("serialNumber");
@@ -34,6 +46,7 @@ public class EntrustPlugin: CAPPlugin {
     }
     
     @objc func initializeSDK(_ call: CAPPluginCall){
+        print("llamada a initialize sdk desde swift...")
         let response:Bool = CreateIdentityQuickOnline.initializeSDK();
         call.resolve([
             "response": response
