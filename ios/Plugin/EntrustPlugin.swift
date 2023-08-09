@@ -53,4 +53,25 @@ public class EntrustPlugin: CAPPlugin {
         ])
     }
     
+    @objc func getDeviceFingerprint(_ call: CAPPluginCall){
+        
+        print("llamada a getDeviceFingerprint - swift");
+        
+        DispatchQueue.main.async {
+            // Crear una instancia de ViewController
+            let viewController = ViewController();
+            
+            viewController.viewDidLoad();
+            
+            // Llamar al método de instancia getDeviceData
+            let deviceFingerprint = viewController.getDeviceFingerprint();
+                        
+            call.resolve([
+                "response": deviceFingerprint as Any
+            ]);
+            
+        }
+    
+    }
+    
 }
