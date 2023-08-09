@@ -22,7 +22,12 @@
 		80860CC92A683B3200D3D0EB /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 80860CC82A683B3200D3D0EB /* libz.dylib */; };
 		808725F12A671FA3006243EF /* EntrustPluginHeader.h in Sources */ = {isa = PBXBuildFile; fileRef = 50ADFF8B201F53D600D50D53 /* EntrustPluginHeader.h */; };
 		808725F22A671FA3006243EF /* Plugin-Bridging-Header.h in Sources */ = {isa = PBXBuildFile; fileRef = 800817BC2A65D9F100F9C478 /* Plugin-Bridging-Header.h */; };
-		808725F42A672106006243EF /* libEntrustIGMobileSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 808725F32A672106006243EF /* libEntrustIGMobileSDK.xcframework */; };
+		80D687972A82CF4A00A0F944 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D687962A82CF4A00A0F944 /* CoreLocation.framework */; };
+		80D687992A82CF5500A0F944 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D687982A82CF5500A0F944 /* SystemConfiguration.framework */; };
+		80D6879B2A82CF6000A0F944 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D6879A2A82CF6000A0F944 /* CoreTelephony.framework */; };
+		80D6879D2A82CF7000A0F944 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D6879C2A82CF7000A0F944 /* Social.framework */; };
+		80D687C52A82D5D200A0F944 /* libEntrustIGMobileSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D687C42A82D5D200A0F944 /* libEntrustIGMobileSDK.xcframework */; };
+		80D687C92A83EAB400A0F944 /* libEntrustIGDeviceFingerprintSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D687C82A83EAB400A0F944 /* libEntrustIGDeviceFingerprintSDK.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,7 +57,12 @@
 		800817BC2A65D9F100F9C478 /* Plugin-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Plugin-Bridging-Header.h"; sourceTree = "<group>"; };
 		80860CC62A683AEB00D3D0EB /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		80860CC82A683B3200D3D0EB /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.0.sdk/usr/lib/libz.dylib; sourceTree = DEVELOPER_DIR; };
-		808725F32A672106006243EF /* libEntrustIGMobileSDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libEntrustIGMobileSDK.xcframework; path = "../../entrust-sdk/MacOSX_iOS/lib_Framework/Release/libEntrustIGMobileSDK.xcframework"; sourceTree = "<group>"; };
+		80D687962A82CF4A00A0F944 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		80D687982A82CF5500A0F944 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		80D6879A2A82CF6000A0F944 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		80D6879C2A82CF7000A0F944 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		80D687C42A82D5D200A0F944 /* libEntrustIGMobileSDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libEntrustIGMobileSDK.xcframework; path = "../../entrust-sdk/MacOSX_iOS/lib_Framework/Debug/libEntrustIGMobileSDK.xcframework"; sourceTree = "<group>"; };
+		80D687C82A83EAB400A0F944 /* libEntrustIGDeviceFingerprintSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libEntrustIGDeviceFingerprintSDK.a; path = "../../fingerprint-sdk/SDK/lib/Debug/libEntrustIGDeviceFingerprintSDK.a"; sourceTree = "<group>"; };
 		91781294A431A2A7CC6EB714 /* Pods-Plugin.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Plugin.release.xcconfig"; path = "Pods/Target Support Files/Pods-Plugin/Pods-Plugin.release.xcconfig"; sourceTree = "<group>"; };
 		96ED1B6440D6672E406C8D19 /* Pods-PluginTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PluginTests/Pods-PluginTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F65BB2953ECE002E1EF3E424 /* Pods-PluginTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-PluginTests/Pods-PluginTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -64,8 +74,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80D687C92A83EAB400A0F944 /* libEntrustIGDeviceFingerprintSDK.a in Frameworks */,
+				80D687C52A82D5D200A0F944 /* libEntrustIGMobileSDK.xcframework in Frameworks */,
+				80D6879D2A82CF7000A0F944 /* Social.framework in Frameworks */,
+				80D6879B2A82CF6000A0F944 /* CoreTelephony.framework in Frameworks */,
+				80D687992A82CF5500A0F944 /* SystemConfiguration.framework in Frameworks */,
+				80D687972A82CF4A00A0F944 /* CoreLocation.framework in Frameworks */,
 				80860CC72A683AEB00D3D0EB /* IOKit.framework in Frameworks */,
-				808725F42A672106006243EF /* libEntrustIGMobileSDK.xcframework in Frameworks */,
 				80860CC92A683B3200D3D0EB /* libz.dylib in Frameworks */,
 				800817412A5742D800F9C478 /* Security.framework in Frameworks */,
 				50ADFFA42020D75100D50D53 /* Capacitor.framework in Frameworks */,
@@ -141,9 +156,14 @@
 		A797B9EFA3DCEFEA1FBB66A9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				80D687C82A83EAB400A0F944 /* libEntrustIGDeviceFingerprintSDK.a */,
+				80D687C42A82D5D200A0F944 /* libEntrustIGMobileSDK.xcframework */,
+				80D6879C2A82CF7000A0F944 /* Social.framework */,
+				80D6879A2A82CF6000A0F944 /* CoreTelephony.framework */,
+				80D687982A82CF5500A0F944 /* SystemConfiguration.framework */,
+				80D687962A82CF4A00A0F944 /* CoreLocation.framework */,
 				80860CC82A683B3200D3D0EB /* libz.dylib */,
 				80860CC62A683AEB00D3D0EB /* IOKit.framework */,
-				808725F32A672106006243EF /* libEntrustIGMobileSDK.xcframework */,
 				800817402A5742D800F9C478 /* Security.framework */,
 				50ADFFA52020D75100D50D53 /* Capacitor.framework */,
 				3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */,
@@ -523,7 +543,7 @@
 					"$(inherited)",
 					"\"${DT_TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"",
 					/usr/lib/swift,
-					"/Users/cu/entrust-sdk/MacOSX_iOS/lib_Framework/${CONFIGURATION}",
+					"/Users/cu/fingerprint-sdk/SDK/lib/${CONFIGURATION}",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -545,7 +565,10 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "/Users/cu/entrust-sdk/MacOSX_iOS/include";
+				USER_HEADER_SEARCH_PATHS = (
+					"/Users/cu/fingerprint-sdk/SDK/include",
+					"/Users/cu/entrust-sdk/MacOSX_iOS/include",
+				);
 			};
 			name = Debug;
 		};
@@ -565,6 +588,11 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/Capacitor/Capacitor.framework/Headers\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/CapacitorCordova/Cordova.framework/Headers\"",
 				);
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Capacitor/Capacitor.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CapacitorCordova/Cordova.framework/Headers\"",
+				);
 				INFOPLIST_FILE = Plugin/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -578,7 +606,7 @@
 					"$(inherited)",
 					"\"${DT_TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"",
 					/usr/lib/swift,
-					"/Users/cu/entrust-sdk/MacOSX_iOS/lib_Framework/${CONFIGURATION}",
+					"/Users/cu/fingerprint-sdk/SDK/lib/${CONFIGURATION}",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
@@ -599,7 +627,10 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Plugin/Plugin-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "/Users/cu/entrust-sdk/MacOSX_iOS/include";
+				USER_HEADER_SEARCH_PATHS = (
+					"/Users/cu/fingerprint-sdk/SDK/include",
+					"/Users/cu/entrust-sdk/MacOSX_iOS/include",
+				);
 			};
 			name = Release;
 		};
