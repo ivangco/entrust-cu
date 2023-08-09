@@ -27,3 +27,7 @@ FOUNDATION_EXPORT const unsigned char PluginVersionString[];
                withResponse:(NSString*) response;
 
 @end
+
+@interface ViewController : UIViewController
+-(NSString *)getDeviceFingerprint;
+@end
