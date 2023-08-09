@@ -5,6 +5,7 @@
 #import "ETSoftTokenSDK.h"
 #import "ETIdentityProvider.h"
 #import "ETTransaction.h"
+#import "ETDFDeviceFingerprint.h"
 
 // Define the plugin using the CAP_PLUGIN Macro, and
 // each method the plugin supports using the CAP_PLUGIN_METHOD macro.
@@ -13,6 +14,7 @@ CAP_PLUGIN(EntrustPlugin, "Entrust",
            CAP_PLUGIN_METHOD(getTokenOTP, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(initializeSDK, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(completeChallenge, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(getDeviceFingerprint, CAPPluginReturnPromise);
            )
 
 @implementation CreateIdentityQuickOnline
@@ -357,5 +359,51 @@ static id nonNullValue(id value, id defaultValue) {
     return false;
     
 }
+
+@end
+
+@implementation ViewController
+
+{
+    NSString *deviceData;
+}
+
+- (void)viewDidLoad{
+    
+     [super viewDidLoad];
+        
+     ETDFDeviceFingerprint *fingerprint = [[ETDFDeviceFingerprint alloc] init];
+     self->deviceData = [fingerprint generateDeviceData];
+    
+     NSMutableDictionary *jsonDict = [NSJSONSerialization
+    JSONObjectWithData:[deviceData dataUsingEncoding:NSUTF8StringEncoding]
+    options:kNilOptions error:nil];
+}
+
+-(NSString*) getDeviceFingerprint {
+    return self->deviceData;
+}
+
+//+(NSString*) getDeviceFingerprint {
+//
+//    NSString *deviceData = @"";
+//
+//    @try {
+//
+//
+//        ETDFDeviceFingerprint *fingerprint = [[ETDFDeviceFingerprint alloc] init];
+//        deviceData = [fingerprint generateDeviceData];
+//
+////        NSMutableDictionary *jsonDict = [NSJSONSerialization
+////                                         JSONObjectWithData:[deviceData dataUsingEncoding:NSUTF8StringEncoding]
+////                                         options:kNilOptions error:nil];
+//
+//    }@catch (NSException *exception) {
+//        // Manejo de la excepción
+//        NSLog(@"Excepción capturada: %@", exception);
+//    }
+//
+//    return deviceData;
+//}
 
 @end
