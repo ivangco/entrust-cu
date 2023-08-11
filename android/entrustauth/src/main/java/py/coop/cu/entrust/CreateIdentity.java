@@ -29,9 +29,9 @@ import java.util.Random;
 public class CreateIdentity {
 
     public static void initialize(Context context) {
-//        PlatformDelegate.setApplicationId("io.ionic.starter");
-//        PlatformDelegate.setApplicationVersion("1.0");
-//        PlatformDelegate.setApplicationScheme("http");
+        PlatformDelegate.setApplicationId("io.ionic.starter");
+        PlatformDelegate.setApplicationVersion("1.0");
+        PlatformDelegate.setApplicationScheme("http");
 
         PlatformDelegate.initialize(context);
         ThirdPartyTokenManagerFactory.setContext(context);
