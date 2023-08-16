@@ -35,8 +35,6 @@ public class CreateIdentity {
 
         PlatformDelegate.initialize(context);
         ThirdPartyTokenManagerFactory.setContext(context);
-
-
     }
 
     public static String getDeviceFingerprint(Context context) {
@@ -307,7 +305,7 @@ public class CreateIdentity {
      * <p>
      * This should be run on a background thread/task.
      */
-    public static String createIdentity(String mSerialNumber, String mAddress, String mRegPassword) {
+    public static String createIdentity(String mSerialNumber, String mAddress, String mRegPassword) throws Exception {
         try {
 
             mAddress = "https://" + mAddress;
@@ -350,13 +348,24 @@ public class CreateIdentity {
             }
 
         } catch (IdentityGuardMobileException e) {
+            android.util.Log.i("IdentityGuardMobileException", e.getMessage());
             e.printStackTrace();
+
+            throw e;
+
+            // unauthorized -- cuando el token ya esta activado, o esta inhabilitado
+            // REGPW_INVALID -- termino el tiempo de activacion
+
             // Display error message to user indicating what went wrong.
         } catch (Exception e) {
+            android.util.Log.i("Exception", e.getMessage());
             e.printStackTrace();
+
+            throw e;
+
             // Display error message indicating invalid serial number.
         }
-        return "";
+
     }
 
     private static String getDeviceId() {

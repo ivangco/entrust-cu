@@ -18,7 +18,7 @@ public class EntrustPlugin extends Plugin {
     private Entrust implementation = new Entrust();
 
     @PluginMethod
-    public void initializeSDK(PluginCall call){
+    public void initializeSDK(PluginCall call) {
         Context context = this.getActivity().getApplicationContext();
         CreateIdentity.initialize(context);
 
@@ -29,7 +29,7 @@ public class EntrustPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void getDeviceFingerprint(PluginCall call){
+    public void getDeviceFingerprint(PluginCall call) {
         Context context = this.getActivity().getApplicationContext();
         String deviceFingerprint = CreateIdentity.getDeviceFingerprint(context);
 
@@ -39,7 +39,7 @@ public class EntrustPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void completeChallenge(PluginCall call){
+    public void completeChallenge(PluginCall call) {
 
         String jsonIdentity = call.getString("jsonIdentity");
         String optionSelected = call.getString("optionSelected");
@@ -103,16 +103,24 @@ public class EntrustPlugin extends Plugin {
         String regAddress = call.getString("regAddress");
         String regPassword = call.getString("regPassword");
 
+        JSObject ret = new JSObject();
+
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Log.i("activateTokenQuick", "corre nuevo hilo para crear el identity");
-                String jsonData = CreateIdentity.createIdentity(serialNumber, regAddress, regPassword);
-                Log.i("activateTokenQuick", jsonData);
 
-                JSObject ret = new JSObject();
-                ret.put("data", jsonData);
+                String jsonData = null;
+                try {
+                    jsonData = CreateIdentity.createIdentity(serialNumber, regAddress, regPassword);
+                    ret.put("data", jsonData);
+                } catch (Exception e) {
+                    Log.i("ActivateError", e.getMessage());
+                    ret.put("error", e.getMessage());
+                }
+
                 call.resolve(ret);
+
             }
         }).start();
 
