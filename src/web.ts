@@ -25,9 +25,9 @@ export class EntrustWeb extends WebPlugin implements EntrustPlugin {
     throw new Error('Method not implemented.' + uri);
   }
 
-  async activateTokenQuick(options: ActivationParams): Promise<{ data: string }> {
+  async activateTokenQuick(options: ActivationParams): Promise<{ data: string, error: string }> {
     console.log('ECHO', options);
-    return { data: "" };
+    return { data: "", error: "" };
   }
 
 }

@@ -30,12 +30,13 @@ export interface DeviceFingerprint {
 }
 
 export type CompleteOptions = "CANCEL" | "CONFIRM";
+export type ActivationError = "UNAUTHORIZED" | "REGPW_INVALID";
 export interface CompleteParams {
   jsonIdentity: string;
   optionSelected: CompleteOptions
 }
 export interface EntrustPlugin {
-  activateTokenQuick(param: ActivationParams): Promise<{ data: string }>;
+  activateTokenQuick(param: ActivationParams): Promise<{ data: string, error: ActivationError | string }>;
   getTokenOTP(data: { jsonIdentity: string }): Promise<{ otp: string }>
   activateTokenQr({ uri }: { uri: string }): Promise<{ value: string }>
   initializeSDK(): Promise<{ response: boolean }>
