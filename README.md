@@ -31,14 +31,14 @@ npx cap sync
 ### activateTokenQuick(...)
 
 ```typescript
-activateTokenQuick(param: ActivationParams) => Promise<{ data: string; }>
+activateTokenQuick(param: ActivationParams) => Promise<{ data: string; error: ActivationError | string; }>
 ```
 
 | Param       | Type                                                          |
 | ----------- | ------------------------------------------------------------- |
 | **`param`** | <code><a href="#activationparams">ActivationParams</a></code> |
 
-**Returns:** <code>Promise&lt;{ data: string; }&gt;</code>
+**Returns:** <code>Promise&lt;{ data: string; error: string; }&gt;</code>
 
 --------------------
 
@@ -176,6 +176,11 @@ getDeviceFingerprint() => Promise<{ response: DeviceFingerprint; }>
 
 
 ### Type Aliases
+
+
+#### ActivationError
+
+<code>"UNAUTHORIZED" | "REGPW_INVALID"</code>
 
 
 #### CompleteOptions
