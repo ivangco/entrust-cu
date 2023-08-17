@@ -123,21 +123,21 @@ public class EntrustPlugin extends Plugin {
                 try {
 
                     objectLog.setMetodo("CreateIdentity.handleValidateSerialNumber");
-                    objectLog.setParametroEntrada("mSerialNumber=" + serialNumber);
+                    objectLog.setParametrosEntrada("mSerialNumber=" + serialNumber);
                     CreateIdentity.handleValidateSerialNumber(serialNumber);
                     objectLog.setEstado("ok");
                     objectLogList.add(objectLog);
 
                     objectLog = new ObjectLog();
                     objectLog.setMetodo("CreateIdentity.handleCreateIdentity");
-                    objectLog.setParametroEntrada("mSerialNumber=" + serialNumber + ";mAddress=" + regAddress + ";mRegPassword=" + regPassword);
+                    objectLog.setParametrosEntrada("mSerialNumber=" + serialNumber + ";mAddress=" + regAddress + ";mRegPassword=" + regPassword);
                     CreateIdentity.handleCreateIdentity(serialNumber, regAddress, regPassword);
                     objectLog.setEstado("ok");
                     objectLogList.add(objectLog);
 
                     objectLog = new ObjectLog();
                     objectLog.setMetodo("CreateIdentity.generateNewSeed");
-                    objectLog.setParametroEntrada("mAddress=" + regAddress);
+                    objectLog.setParametrosEntrada("mAddress=" + regAddress);
                     CreateIdentity.generateNewSeed(regAddress);
                     objectLog.setEstado("ok");
                     objectLogList.add(objectLog);
