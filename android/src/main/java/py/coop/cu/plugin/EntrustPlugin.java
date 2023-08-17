@@ -8,7 +8,15 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import org.json.JSONArray;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import py.coop.cu.entrust.ObjectLog;
 import py.coop.cu.entrust.OnlineTransactions;
 import py.coop.cu.entrust.CreateIdentity;
 
@@ -99,30 +107,91 @@ public class EntrustPlugin extends Plugin {
 
     @PluginMethod
     public void activateTokenQuick(PluginCall call) {
+
         String serialNumber = call.getString("serialNumber");
         String regAddress = call.getString("regAddress");
         String regPassword = call.getString("regPassword");
 
-        JSObject ret = new JSObject();
-
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.i("activateTokenQuick", "corre nuevo hilo para crear el identity");
+                JSObject ret = new JSObject();
 
-                String jsonData = null;
+                ObjectLog objectLog = new ObjectLog();
+                List<ObjectLog> objectLogList = new ArrayList<>();
+
                 try {
-                    jsonData = CreateIdentity.createIdentity(serialNumber, regAddress, regPassword);
-                    ret.put("data", jsonData);
+
+                    objectLog.setMetodo("CreateIdentity.handleValidateSerialNumber");
+                    objectLog.setParametroEntrada("mSerialNumber=" + serialNumber);
+                    CreateIdentity.handleValidateSerialNumber(serialNumber);
+                    objectLog.setEstado("ok");
+                    objectLogList.add(objectLog);
+
+                    objectLog = new ObjectLog();
+                    objectLog.setMetodo("CreateIdentity.handleCreateIdentity");
+                    objectLog.setParametroEntrada("mSerialNumber=" + serialNumber + ";mAddress=" + regAddress + ";mRegPassword=" + regPassword);
+                    CreateIdentity.handleCreateIdentity(serialNumber, regAddress, regPassword);
+                    objectLog.setEstado("ok");
+                    objectLogList.add(objectLog);
+
+                    objectLog = new ObjectLog();
+                    objectLog.setMetodo("CreateIdentity.generateNewSeed");
+                    objectLog.setParametroEntrada("mAddress=" + regAddress);
+                    CreateIdentity.generateNewSeed(regAddress);
+                    objectLog.setEstado("ok");
+                    objectLogList.add(objectLog);
+
+                    objectLog = new ObjectLog();
+                    objectLog.setMetodo("CreateIdentity.getJsonIdentity");
+                    String jsonIdentity = CreateIdentity.getJsonIdentity();
+                    objectLog.setEstado("ok");
+                    objectLog.setRespuestaSalida(jsonIdentity);
+
+                    ret.put("data", jsonIdentity);
+
                 } catch (Exception e) {
-                    Log.i("ActivateError", e.getMessage());
+
+                    objectLog.setEstado("error");
+                    objectLog.setMensaje(e.getMessage());
+                    objectLogList.add(objectLog);
+
                     ret.put("error", e.getMessage());
+
+                    Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+                    String jsonError = gson.toJson(objectLogList);
+
+                    ret.put("log", jsonError);
+
                 }
+
+                System.out.println(objectLogList.toString());
 
                 call.resolve(ret);
 
             }
         }).start();
+
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Log.i("activateTokenQuick", "corre nuevo hilo para crear el identity");
+//
+//                String jsonData = null;
+//                try {
+//                    jsonData = CreateIdentity.createIdentity(serialNumber, regAddress, regPassword);
+//                    ret.put("data", jsonData);
+//                } catch (Exception e) {
+//                    Log.i("ActivateError", e.getMessage());
+//                    Log.i("ActivateError", e.getLocalizedMessage());
+//                    System.out.println("error create identity: " + e);
+//                    ret.put("error", e.getMessage());
+//                }
+//
+//                call.resolve(ret);
+//
+//            }
+//        }).start();
 
     }
 }
