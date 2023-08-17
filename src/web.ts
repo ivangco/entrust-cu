@@ -1,8 +1,11 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { EntrustPlugin, ActivationParams, DeviceFingerprint } from './definitions';
+import type { EntrustPlugin, ActivationParams, DeviceFingerprint, ActivationError, ObjectLog } from './definitions';
 
 export class EntrustWeb extends WebPlugin implements EntrustPlugin {
+  activateTokenQuick(param: ActivationParams): Promise<{ data: string; error: ActivationError; log: ObjectLog[]; }> {
+    throw new Error('Method not implemented.' + param);
+  }
 
   getDeviceFingerprint(): Promise<{ response: DeviceFingerprint }> {
     throw new Error('Method not implemented.');
@@ -23,11 +26,6 @@ export class EntrustWeb extends WebPlugin implements EntrustPlugin {
 
   activateTokenQr({ uri }: { uri: string; }): Promise<{ value: string; }> {
     throw new Error('Method not implemented.' + uri);
-  }
-
-  async activateTokenQuick(options: ActivationParams): Promise<{ data: string, error: string }> {
-    console.log('ECHO', options);
-    return { data: "", error: "" };
   }
 
 }

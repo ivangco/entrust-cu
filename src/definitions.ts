@@ -29,6 +29,14 @@ export interface DeviceFingerprint {
   btName: string;
 }
 
+export interface ObjectLog {
+  estado: string;
+  fechaHora: string;
+  metodo: string;
+  parametroEntrada: string;
+  mensaje?: string;
+}
+
 export type CompleteOptions = "CANCEL" | "CONFIRM";
 export type ActivationError = "UNAUTHORIZED" | "REGPW_INVALID";
 export interface CompleteParams {
@@ -36,7 +44,7 @@ export interface CompleteParams {
   optionSelected: CompleteOptions
 }
 export interface EntrustPlugin {
-  activateTokenQuick(param: ActivationParams): Promise<{ data: string, error: ActivationError | string }>;
+  activateTokenQuick(param: ActivationParams): Promise<{ data: string, error: ActivationError, log: ObjectLog[] }>;
   getTokenOTP(data: { jsonIdentity: string }): Promise<{ otp: string }>
   activateTokenQr({ uri }: { uri: string }): Promise<{ value: string }>
   initializeSDK(): Promise<{ response: boolean }>
