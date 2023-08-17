@@ -28,10 +28,12 @@ import java.util.Random;
 
 public class CreateIdentity {
 
+    private static Identity createdIdentity = null;
+
     public static void initialize(Context context) {
         PlatformDelegate.setApplicationId("io.ionic.starter");
         PlatformDelegate.setApplicationVersion("1.0");
-        PlatformDelegate.setApplicationScheme("http");
+        PlatformDelegate.setApplicationScheme("cu");
 
         PlatformDelegate.initialize(context);
         ThirdPartyTokenManagerFactory.setContext(context);
@@ -297,6 +299,47 @@ public class CreateIdentity {
             e.printStackTrace();
             return "";
         }
+    }
+
+    public static void handleValidateSerialNumber(String mSerialNumber) throws Exception {
+        IdentityProvider.validateSerialNumber(mSerialNumber);
+    }
+
+    public static void handleCreateIdentity(String mSerialNumber, String mAddress, String mRegPassword) throws Exception {
+
+        // For the purposes of this sample we will disable notifications and
+        // enable transactions.
+        boolean supportsNotifications = false;
+        boolean supportsTransactions = true;
+
+        // verificar de donde se sacan los valores
+        // se utilizan estos a modo de prueba
+        boolean supportsOnlineTransactions = true;
+        boolean supportsOfflineTransactions = true;
+
+        mAddress = mAddress.indexOf("https") < 0 ? "https://" + mAddress : mAddress;
+
+        String deviceId = getDeviceId();
+
+        TransactionProvider tp = new TransactionProvider(mAddress);
+
+        Identity identity = tp.createIdentityUsingRegPassword(PlatformDelegate.getCommCallback(),
+                mRegPassword, mSerialNumber, deviceId, supportsNotifications,
+                supportsTransactions, supportsOnlineTransactions,
+                supportsOfflineTransactions);
+
+        CreateIdentity.createdIdentity = identity;
+
+    }
+
+    public static void generateNewSeed(String mAddress) throws Exception {
+        mAddress = mAddress.indexOf("https") < 0 ? "https://" + mAddress : mAddress;
+        TransactionProvider transactionProvider = new TransactionProvider(mAddress);
+        transactionProvider.getNewSeed(PlatformDelegate.getCommCallback(), CreateIdentity.createdIdentity);
+    }
+
+    public static String getJsonIdentity() throws Exception {
+        return CreateIdentity.createdIdentity != null ? CreateIdentity.createdIdentity.toJSON().toString() : "";
     }
 
     /**
