@@ -31,14 +31,14 @@ npx cap sync
 ### activateTokenQuick(...)
 
 ```typescript
-activateTokenQuick(param: ActivationParams) => Promise<{ data: string; error: ActivationError | string; }>
+activateTokenQuick(param: ActivationParams) => Promise<{ data: string; error: ActivationError; log: ObjectLog[]; }>
 ```
 
 | Param       | Type                                                          |
 | ----------- | ------------------------------------------------------------- |
 | **`param`** | <code><a href="#activationparams">ActivationParams</a></code> |
 
-**Returns:** <code>Promise&lt;{ data: string; error: string; }&gt;</code>
+**Returns:** <code>Promise&lt;{ data: string; error: <a href="#activationerror">ActivationError</a>; log: ObjectLog[]; }&gt;</code>
 
 --------------------
 
@@ -126,6 +126,17 @@ getDeviceFingerprint() => Promise<{ response: DeviceFingerprint; }>
 
 
 ### Interfaces
+
+
+#### ObjectLog
+
+| Prop                   | Type                |
+| ---------------------- | ------------------- |
+| **`estado`**           | <code>string</code> |
+| **`fechaHora`**        | <code>string</code> |
+| **`metodo`**           | <code>string</code> |
+| **`parametroEntrada`** | <code>string</code> |
+| **`mensaje`**          | <code>string</code> |
 
 
 #### ActivationParams
