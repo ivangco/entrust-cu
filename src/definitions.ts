@@ -33,8 +33,9 @@ export interface ObjectLog {
   estado: string;
   fechaHora: string;
   metodo: string;
-  parametroEntrada: string;
+  parametrosEntrada: string;
   mensaje?: string;
+  respuestaSalida?: string;
 }
 
 export type CompleteOptions = "CANCEL" | "CONFIRM";
@@ -43,6 +44,7 @@ export interface CompleteParams {
   jsonIdentity: string;
   optionSelected: CompleteOptions
 }
+
 export interface EntrustPlugin {
   activateTokenQuick(param: ActivationParams): Promise<{ data: string, error: ActivationError, log: ObjectLog[] }>;
   getTokenOTP(data: { jsonIdentity: string }): Promise<{ otp: string }>

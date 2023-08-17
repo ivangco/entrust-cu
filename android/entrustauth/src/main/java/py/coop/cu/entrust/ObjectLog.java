@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class ObjectLog {
 
     private String metodo;
-    private String parametroEntrada;
+    private String parametrosEntrada;
     private String respuestaSalida;
     private String estado;
     private String mensaje;
@@ -21,14 +21,6 @@ public class ObjectLog {
 
     public void setMetodo(String metodo) {
         this.metodo = metodo;
-    }
-
-    public String getParametroEntrada() {
-        return parametroEntrada;
-    }
-
-    public void setParametroEntrada(String parametroEntrada) {
-        this.parametroEntrada = parametroEntrada;
     }
 
     public String getRespuestaSalida() {
@@ -55,15 +47,24 @@ public class ObjectLog {
         this.mensaje = mensaje;
     }
 
+    public String getParametrosEntrada() {
+        return parametrosEntrada;
+    }
+
+    public void setParametrosEntrada(String parametrosEntrada) {
+        this.parametrosEntrada = parametrosEntrada;
+    }
+
     @Override
     public String toString() {
         return "ObjectLog{" +
                 "metodo='" + metodo + '\'' +
-                ", parametroEntrada='" + parametroEntrada + '\'' +
+                ", parametrosEntrada='" + parametrosEntrada + '\'' +
                 ", respuestaSalida='" + respuestaSalida + '\'' +
                 ", estado='" + estado + '\'' +
                 ", mensaje='" + mensaje + '\'' +
-                ", fechaHora=" + fechaHora +
+                ", fechaHora='" + fechaHora + '\'' +
                 '}';
     }
 }
+
