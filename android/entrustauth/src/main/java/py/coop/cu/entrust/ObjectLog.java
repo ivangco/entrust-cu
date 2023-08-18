@@ -13,6 +13,7 @@ public class ObjectLog {
 
     public ObjectLog() {
         this.fechaHora = LocalDateTime.now().toString();
+        this.estado = "ok";
     }
 
     public String getMetodo() {
