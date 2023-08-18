@@ -39,15 +39,12 @@ public class OnlineTransactions {
         transaction = provider.poll(
                 PlatformDelegate.getCommCallback(), CreateIdentity.createdIdentity);
 
-        if (transaction != null) {
-            return true;
+        if (transaction == null) {
+            throw new Exception("NOT_EXISTS_TRANSACTION");
         }
 
-// If a transaction is retrieved, it should be saved,
-// as it can only be retrieved from the Transaction
-// component once. If it is lost, there's no way to
-// get it back in order to confirm the transaction.
-        return false;
+        return true;
+
     }
 
     public static void getTransactions(String jsonIdentity) throws Exception {
@@ -98,21 +95,14 @@ public class OnlineTransactions {
 
         String url = "https://universitaria.us.trustedauth.com/api/mobile";
 
-        if (transaction != null) {
+        System.out.println(transaction.toJSON().toString());
 
-            System.out.println(transaction.toJSON().toString());
+        TransactionResponse transactionResponse = optionSelected.equals("CONFIRM") ? TransactionResponse.CONFIRM : TransactionResponse.CANCEL;
 
-            TransactionResponse transactionResponse = optionSelected.equals("CONFIRM") ? TransactionResponse.CONFIRM : TransactionResponse.CANCEL;
+        boolean challengeResponse = completeTransaction(transaction, CreateIdentity.createdIdentity, transactionResponse, url);
+        System.out.println("challenge response: " + challengeResponse);
 
-            boolean challengeResponse = completeTransaction(transaction, CreateIdentity.createdIdentity, transactionResponse, url);
-            System.out.println("challenge response: " + challengeResponse);
-
-            return challengeResponse;
-
-        } else {
-            System.out.println("no se encontro ninguna transaccion");
-            throw new Exception("NOT_EXISTS_TRANSACTION");
-        }
+        return challengeResponse;
 
     }
 
