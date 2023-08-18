@@ -15,9 +15,7 @@ npx cap sync
 
 * [`activateTokenQuick(...)`](#activatetokenquick)
 * [`getTokenOTP(...)`](#gettokenotp)
-* [`activateTokenQr(...)`](#activatetokenqr)
 * [`initializeSDK()`](#initializesdk)
-* [`listTransactions(...)`](#listtransactions)
 * [`completeChallenge(...)`](#completechallenge)
 * [`getDeviceFingerprint()`](#getdevicefingerprint)
 * [Interfaces](#interfaces)
@@ -46,29 +44,14 @@ activateTokenQuick(param: ActivationParams) => Promise<{ data: string; error: Ac
 ### getTokenOTP(...)
 
 ```typescript
-getTokenOTP(data: { jsonIdentity: string; }) => Promise<{ otp: string; }>
+getTokenOTP(data: { jsonIdentity: string; }) => Promise<{ otp: string; error: string; log: ObjectLog[]; }>
 ```
 
 | Param      | Type                                   |
 | ---------- | -------------------------------------- |
 | **`data`** | <code>{ jsonIdentity: string; }</code> |
 
-**Returns:** <code>Promise&lt;{ otp: string; }&gt;</code>
-
---------------------
-
-
-### activateTokenQr(...)
-
-```typescript
-activateTokenQr({ uri }: { uri: string; }) => Promise<{ value: string; }>
-```
-
-| Param     | Type                          |
-| --------- | ----------------------------- |
-| **`__0`** | <code>{ uri: string; }</code> |
-
-**Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
+**Returns:** <code>Promise&lt;{ otp: string; error: string; log: ObjectLog[]; }&gt;</code>
 
 --------------------
 
@@ -84,32 +67,17 @@ initializeSDK() => Promise<{ response: boolean; }>
 --------------------
 
 
-### listTransactions(...)
-
-```typescript
-listTransactions(options: { jsonIdentity: string; }) => Promise<{ response: string; }>
-```
-
-| Param         | Type                                   |
-| ------------- | -------------------------------------- |
-| **`options`** | <code>{ jsonIdentity: string; }</code> |
-
-**Returns:** <code>Promise&lt;{ response: string; }&gt;</code>
-
---------------------
-
-
 ### completeChallenge(...)
 
 ```typescript
-completeChallenge(option: CompleteParams) => Promise<{ response: boolean; }>
+completeChallenge(option: CompleteParams) => Promise<{ response: boolean; error: string; log: ObjectLog[]; }>
 ```
 
 | Param        | Type                                                      |
 | ------------ | --------------------------------------------------------- |
 | **`option`** | <code><a href="#completeparams">CompleteParams</a></code> |
 
-**Returns:** <code>Promise&lt;{ response: boolean; }&gt;</code>
+**Returns:** <code>Promise&lt;{ response: boolean; error: string; log: ObjectLog[]; }&gt;</code>
 
 --------------------
 
@@ -117,10 +85,10 @@ completeChallenge(option: CompleteParams) => Promise<{ response: boolean; }>
 ### getDeviceFingerprint()
 
 ```typescript
-getDeviceFingerprint() => Promise<{ response: DeviceFingerprint; }>
+getDeviceFingerprint() => Promise<{ response: DeviceFingerprint; error: string; log: ObjectLog[]; }>
 ```
 
-**Returns:** <code>Promise&lt;{ response: <a href="#devicefingerprint">DeviceFingerprint</a>; }&gt;</code>
+**Returns:** <code>Promise&lt;{ response: <a href="#devicefingerprint">DeviceFingerprint</a>; error: string; log: ObjectLog[]; }&gt;</code>
 
 --------------------
 
@@ -130,13 +98,14 @@ getDeviceFingerprint() => Promise<{ response: DeviceFingerprint; }>
 
 #### ObjectLog
 
-| Prop                   | Type                |
-| ---------------------- | ------------------- |
-| **`estado`**           | <code>string</code> |
-| **`fechaHora`**        | <code>string</code> |
-| **`metodo`**           | <code>string</code> |
-| **`parametroEntrada`** | <code>string</code> |
-| **`mensaje`**          | <code>string</code> |
+| Prop                    | Type                |
+| ----------------------- | ------------------- |
+| **`estado`**            | <code>string</code> |
+| **`fechaHora`**         | <code>string</code> |
+| **`metodo`**            | <code>string</code> |
+| **`parametrosEntrada`** | <code>string</code> |
+| **`mensaje`**           | <code>string</code> |
+| **`respuestaSalida`**   | <code>string</code> |
 
 
 #### ActivationParams
