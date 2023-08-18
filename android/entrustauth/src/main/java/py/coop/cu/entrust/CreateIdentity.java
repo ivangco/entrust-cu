@@ -28,7 +28,7 @@ import java.util.Random;
 
 public class CreateIdentity {
 
-    private static Identity createdIdentity = null;
+    public static Identity createdIdentity = null;
 
     public static void initialize(Context context) {
         PlatformDelegate.setApplicationId("io.ionic.starter");
@@ -39,7 +39,7 @@ public class CreateIdentity {
         ThirdPartyTokenManagerFactory.setContext(context);
     }
 
-    public static String getDeviceFingerprint(Context context) {
+    public static String getDeviceFingerprint(Context context) throws Exception {
 
         DeviceFingerprint deviceFingerprint = new DeviceFingerprint();
         deviceFingerprint.init(context);
@@ -47,24 +47,17 @@ public class CreateIdentity {
         final DeviceAttributeRegistry registry =
                 DeviceAttributeRegistry.getInstance(context);
 
-        try {
-            List<DeviceAttribute> allAttributes =
-                    DeviceAttributeRegistry.getAllPossibleSdkSyncrhonousDeviceAttributes();
-            for (DeviceAttribute attribute : allAttributes) {
-                if (!registry.addCustomDeviceAttribute(attribute, true, false)) {
-                    Log.w("DeviceFingerprintSample",
-                            "Insufficient permissions for attribute: " + attribute.getName());
-                }
+        List<DeviceAttribute> allAttributes =
+                DeviceAttributeRegistry.getAllPossibleSdkSyncrhonousDeviceAttributes();
+        for (DeviceAttribute attribute : allAttributes) {
+            if (!registry.addCustomDeviceAttribute(attribute, true, false)) {
+                Log.w("DeviceFingerprintSample",
+                        "Insufficient permissions for attribute: " + attribute.getName());
             }
-
-            JSONObject data = deviceFingerprint.generateDeviceData();
-            return data.toString();
-
-        } catch (Exception e) {
-            Log.e("DeviceFingerprintSample", "Error occurred during initialization", e);
         }
 
-        return "";
+        JSONObject data = deviceFingerprint.generateDeviceData();
+        return data.toString();
 
     }
 
@@ -284,21 +277,13 @@ public class CreateIdentity {
 //        return identity;
     }
 
-    public static Identity createIdentityFromJson(String jsonIdentity) {
-        return EncodingUtils.decodeIdentity(jsonIdentity);
+    public static void createIdentityFromJson(String jsonIdentity) throws Exception {
+        CreateIdentity.createdIdentity = EncodingUtils.decodeIdentity(jsonIdentity);
     }
 
-    public static String getOTP(String jsonIdentity) {
-        Identity identity = createIdentityFromJson(jsonIdentity);
-        try {
-
-            Log.i("getOTP", "otp -> " + identity.getOTP());
-
-            return identity.getOTP();
-        } catch (IdentityGuardMobileException e) {
-            e.printStackTrace();
-            return "";
-        }
+    public static String getOTP() throws Exception {
+        Log.i("getOTP", "otp -> " + CreateIdentity.createdIdentity.getOTP());
+        return CreateIdentity.createdIdentity.getOTP();
     }
 
     public static void handleValidateSerialNumber(String mSerialNumber) throws Exception {

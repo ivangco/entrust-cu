@@ -12,6 +12,8 @@ import java.util.Arrays;
 
 public class OnlineTransactions {
 
+    private static Transaction transaction = null;
+
     /**
      * Fetch the latest transaction for the given soft
      * token identity. The URL here is the URL of the
@@ -20,77 +22,45 @@ public class OnlineTransactions {
      * <p>
      * This should be run on a background thread/task.
      */
-    public static Transaction fetchTransaction(Identity identity,
-                                               String url) {
+    public static boolean fetchTransaction() throws Exception {
+
+        String url = "https://universitaria.us.trustedauth.com/api/mobile";
+
 // Your application should check the Identity’s mobile security profile
 // first, to ensure that it can still be used on the device
-        if (!identity.isActivationOrUsageAllowed()) {
-            return null;
+        if (!CreateIdentity.createdIdentity.isActivationOrUsageAllowed()) {
+            throw new Exception("ACTIVATION_NOT_ALLOWED");
         }
+
         TransactionProvider provider = new TransactionProvider(url);
-// The poll method checks for the existence of a
-// transaction, and returns it if one exists.
-        Transaction transaction = null;
-        try {
-            transaction = provider.poll(
-                    PlatformDelegate.getCommCallback(), identity);
-        } catch (IdentityGuardMobileException e) {
-            e.printStackTrace();
+        // The poll method checks for the existence of a
+        // transaction, and returns it if one exists.
+
+        transaction = provider.poll(
+                PlatformDelegate.getCommCallback(), CreateIdentity.createdIdentity);
+
+        if (transaction != null) {
+            return true;
         }
+
 // If a transaction is retrieved, it should be saved,
 // as it can only be retrieved from the Transaction
 // component once. If it is lost, there's no way to
 // get it back in order to confirm the transaction.
-        return transaction;
+        return false;
     }
 
-    public static void getTransactions(String jsonIdentity) {
+    public static void getTransactions(String jsonIdentity) throws Exception {
 
-        Identity identity = CreateIdentity.createIdentityFromJson(jsonIdentity);
+//        Identity identity = CreateIdentity.createIdentityFromJson(jsonIdentity);
         String url = "https://universitaria.us.trustedauth.com/api/mobile";
 
-        Transaction transaction = fetchTransaction(identity, url);
-
-        if (transaction != null) {
-            try {
-                System.out.println(transaction.toJSON().toString());
-
-                boolean challengeResponse = completeTransaction(transaction, identity, TransactionResponse.CANCEL, url);
-                System.out.println("challenge response: " + challengeResponse);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("no se encontro ninguna transaccion");
-        }
-
-//        ArrayList<Transaction> transactions = fetchQueueTransaction(identity, url);
+//        fetchTransaction(CreateIdentity.createdIdentity, url);
 //
-//        if(transactions != null){
-//            transactions.forEach(transaction -> {
-//                System.out.println("transaction id: " + transaction.getTransactionId());
-//                System.out.println("transaction app name: " + transaction.getAppName());
-//                System.out.println("transaction mode: " + transaction.getTransactionMode().toString());
-//                System.out.println("transaction user id: " + transaction.getUserId());
-//                try {
-//                    System.out.println("json -> " + transaction.toJSON().toString());
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                System.out.println("details ***");
-//                if(transaction.getDetails() != null){
-//                    Arrays.stream(transaction.getDetails()).forEach(detail -> {
-//                        System.out.println("detail: " + detail.getDetail());
-//                        System.out.println("detail value: " + detail.getValue());
-//                    });
-//                }
+//        System.out.println(transaction.toJSON().toString());
 //
-//
-//            });
-//        }else{
-//            System.out.println("no hay transacciones");
-//        }
+//        boolean challengeResponse = completeTransaction(transaction, CreateIdentity.createdIdentity, TransactionResponse.CANCEL, url);
+//        System.out.println("challenge response: " + challengeResponse);
 
     }
 
@@ -124,34 +94,26 @@ public class OnlineTransactions {
         return mQueue_Transactions;
     }
 
-    public static boolean handleCompleteTransaction(String jsonIdentity, String optionSelected) {
+    public static boolean handleCompleteTransaction(String optionSelected) throws Exception {
 
-        Identity identity = CreateIdentity.createIdentityFromJson(jsonIdentity);
         String url = "https://universitaria.us.trustedauth.com/api/mobile";
-
-        Transaction transaction = fetchTransaction(identity, url);
 
         if (transaction != null) {
 
-            try {
-                System.out.println(transaction.toJSON().toString());
+            System.out.println(transaction.toJSON().toString());
 
-                TransactionResponse transactionResponse = optionSelected.equals("CONFIRM") ? TransactionResponse.CONFIRM : TransactionResponse.CANCEL;
+            TransactionResponse transactionResponse = optionSelected.equals("CONFIRM") ? TransactionResponse.CONFIRM : TransactionResponse.CANCEL;
 
-                boolean challengeResponse = completeTransaction(transaction, identity, transactionResponse, url);
-                System.out.println("challenge response: " + challengeResponse);
+            boolean challengeResponse = completeTransaction(transaction, CreateIdentity.createdIdentity, transactionResponse, url);
+            System.out.println("challenge response: " + challengeResponse);
 
-                return challengeResponse;
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            return challengeResponse;
 
         } else {
             System.out.println("no se encontro ninguna transaccion");
+            throw new Exception("NOT_EXISTS_TRANSACTION");
         }
 
-        return false;
     }
 
     /**
@@ -162,25 +124,17 @@ public class OnlineTransactions {
      * This should be run on a background thread/task.
      */
     public static boolean completeTransaction(Transaction transaction,
-                                              Identity identity, TransactionResponse response, String url) {
+                                              Identity identity, TransactionResponse response, String url) throws Exception {
         transaction.setTransactionResponse(response);
         String confirmationCode = null;
-        try {
-            confirmationCode = TransactionProvider.getConfirmationCode(
-                    identity, transaction);
-        } catch (IdentityGuardMobileException e) {
-            e.printStackTrace();
-        }
-        try {
-            TransactionProvider tp = new TransactionProvider(url);
-            return tp.authenticateTransaction(PlatformDelegate.getCommCallback(),
-                    identity, transaction, confirmationCode);
-        } catch (IdentityGuardMobileException e) {
-// Display error message
-        } catch (Exception e) {
-// Display error message
-        }
-        return false;
+
+        confirmationCode = TransactionProvider.getConfirmationCode(
+                identity, transaction);
+
+        TransactionProvider tp = new TransactionProvider(url);
+        return tp.authenticateTransaction(PlatformDelegate.getCommCallback(),
+                identity, transaction, confirmationCode);
+
     }
 
 }
