@@ -47,10 +47,8 @@ export interface CompleteParams {
 
 export interface EntrustPlugin {
   activateTokenQuick(param: ActivationParams): Promise<{ data: string, error: ActivationError, log: ObjectLog[] }>;
-  getTokenOTP(data: { jsonIdentity: string }): Promise<{ otp: string }>
-  activateTokenQr({ uri }: { uri: string }): Promise<{ value: string }>
+  getTokenOTP(data: { jsonIdentity: string }): Promise<{ otp: string, error: string, log: ObjectLog[] }>
   initializeSDK(): Promise<{ response: boolean }>
-  listTransactions(options: { jsonIdentity: string }): Promise<{ response: string }>
-  completeChallenge(option: CompleteParams): Promise<{ response: boolean }>
-  getDeviceFingerprint(): Promise<{ response: DeviceFingerprint }>
+  completeChallenge(option: CompleteParams): Promise<{ response: boolean, error: string, log: ObjectLog[] }>
+  getDeviceFingerprint(): Promise<{ response: DeviceFingerprint, error: string, log: ObjectLog[] }>
 }
