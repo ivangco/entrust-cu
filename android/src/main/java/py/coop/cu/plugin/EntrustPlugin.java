@@ -38,11 +38,39 @@ public class EntrustPlugin extends Plugin {
 
     @PluginMethod
     public void getDeviceFingerprint(PluginCall call) {
-        Context context = this.getActivity().getApplicationContext();
-        String deviceFingerprint = CreateIdentity.getDeviceFingerprint(context);
 
+        Context context = this.getActivity().getApplicationContext();
+
+        ObjectLog objectLog = new ObjectLog();
+        List<ObjectLog> objectLogList = new ArrayList<>();
         JSObject ret = new JSObject();
-        ret.put("response", deviceFingerprint);
+
+        try {
+
+            objectLog.setMetodo("CreateIdentity.getDeviceFingerprint");
+            String deviceFingerprint = CreateIdentity.getDeviceFingerprint(context);
+            objectLog.setRespuestaSalida(deviceFingerprint);
+            objectLogList.add(objectLog);
+
+            ret.put("response", deviceFingerprint);
+
+        }catch (Exception e){
+
+            e.printStackTrace();
+
+            objectLog.setEstado("error");
+            objectLog.setMensaje(e.getMessage());
+            objectLogList.add(objectLog);
+
+            ret.put("error", e.getMessage());
+
+            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+            String jsonError = gson.toJson(objectLogList);
+
+            ret.put("log", jsonError);
+
+        }
+
         call.resolve(ret);
     }
 
@@ -57,29 +85,53 @@ public class EntrustPlugin extends Plugin {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                boolean response = OnlineTransactions.handleCompleteTransaction(jsonIdentity, optionSelected);
+                ObjectLog objectLog = new ObjectLog();
+                List<ObjectLog> objectLogList = new ArrayList<>();
                 JSObject ret = new JSObject();
-                ret.put("response", response);
+
+                try {
+
+                    objectLog.setMetodo("CreateIdentity.createIdentityFromJson");
+                    objectLog.setParametrosEntrada("jsonIdentity=" + jsonIdentity);
+                    CreateIdentity.createIdentityFromJson(jsonIdentity);
+                    objectLogList.add(objectLog);
+
+                    objectLog = new ObjectLog();
+                    objectLog.setMetodo("OnlineTransactions.fetchTransaction");
+                    Boolean responseFetch = OnlineTransactions.fetchTransaction();
+                    objectLog.setRespuestaSalida(responseFetch.toString());
+                    objectLogList.add(objectLog);
+
+                    objectLog = new ObjectLog();
+                    objectLog.setMetodo("OnlineTransactions.handleCompleteTransaction");
+                    objectLog.setParametrosEntrada("optionSelected=" + optionSelected);
+                    Boolean responseComplete = OnlineTransactions.handleCompleteTransaction(optionSelected);
+                    objectLog.setRespuestaSalida(responseComplete.toString());
+                    objectLogList.add(objectLog);
+
+                    ret.put("response", responseComplete);
+
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+
+                    objectLog.setEstado("error");
+                    objectLog.setMensaje(e.getMessage());
+                    objectLogList.add(objectLog);
+
+                    ret.put("error", e.getMessage());
+
+                    Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+                    String jsonError = gson.toJson(objectLogList);
+
+                    ret.put("log", jsonError);
+
+                }
+
                 call.resolve(ret);
+
             }
-        }).start();
 
-    }
-
-    @PluginMethod
-    public void listTransactions(PluginCall call) {
-
-        String jsonIdentity = call.getString("jsonIdentity");
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                OnlineTransactions.getTransactions(jsonIdentity);
-
-                JSObject ret = new JSObject();
-                ret.put("response", "response");
-                call.resolve();
-            }
         }).start();
 
     }
@@ -98,10 +150,51 @@ public class EntrustPlugin extends Plugin {
 
     @PluginMethod
     public void getTokenOTP(PluginCall call) {
-        String jsonIdentity = call.getString("jsonIdentity");
-        String generatedOTP = CreateIdentity.getOTP(jsonIdentity);
+
+        System.out.println("get token otp....");
+
+        ObjectLog objectLog = new ObjectLog();
+        List<ObjectLog> objectLogList = new ArrayList<>();
         JSObject ret = new JSObject();
-        ret.put("otp", generatedOTP);
+
+        try {
+
+            String json = call.getString("jsonIdentity");
+
+            System.out.println(json);
+
+            objectLog.setMetodo("CreateIdentity.createIdentityFromJson");
+            objectLog.setParametrosEntrada("jsonIdentity=" + json);
+            CreateIdentity.createIdentityFromJson(json);
+            objectLogList.add(objectLog);
+
+            objectLog = new ObjectLog();
+            objectLog.setMetodo("CreateIdentity.getOTP");
+            String generatedOTP = CreateIdentity.getOTP();
+            objectLog.setRespuestaSalida(generatedOTP);
+            objectLogList.add(objectLog);
+
+            ret.put("otp", generatedOTP);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            objectLog.setEstado("error");
+            objectLog.setMensaje(e.getMessage());
+            objectLogList.add(objectLog);
+
+            ret.put("error", e.getMessage());
+
+            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+            String jsonError = gson.toJson(objectLogList);
+
+            ret.put("log", jsonError);
+
+        }
+
+        System.out.println(objectLogList.toString());
+
         call.resolve(ret);
     }
 
@@ -125,32 +218,30 @@ public class EntrustPlugin extends Plugin {
                     objectLog.setMetodo("CreateIdentity.handleValidateSerialNumber");
                     objectLog.setParametrosEntrada("mSerialNumber=" + serialNumber);
                     CreateIdentity.handleValidateSerialNumber(serialNumber);
-                    objectLog.setEstado("ok");
                     objectLogList.add(objectLog);
 
                     objectLog = new ObjectLog();
                     objectLog.setMetodo("CreateIdentity.handleCreateIdentity");
                     objectLog.setParametrosEntrada("mSerialNumber=" + serialNumber + ";mAddress=" + regAddress + ";mRegPassword=" + regPassword);
                     CreateIdentity.handleCreateIdentity(serialNumber, regAddress, regPassword);
-                    objectLog.setEstado("ok");
                     objectLogList.add(objectLog);
 
                     objectLog = new ObjectLog();
                     objectLog.setMetodo("CreateIdentity.generateNewSeed");
                     objectLog.setParametrosEntrada("mAddress=" + regAddress);
                     CreateIdentity.generateNewSeed(regAddress);
-                    objectLog.setEstado("ok");
                     objectLogList.add(objectLog);
 
                     objectLog = new ObjectLog();
                     objectLog.setMetodo("CreateIdentity.getJsonIdentity");
                     String jsonIdentity = CreateIdentity.getJsonIdentity();
-                    objectLog.setEstado("ok");
                     objectLog.setRespuestaSalida(jsonIdentity);
 
                     ret.put("data", jsonIdentity);
 
                 } catch (Exception e) {
+
+                    e.printStackTrace();
 
                     objectLog.setEstado("error");
                     objectLog.setMensaje(e.getMessage());
@@ -171,27 +262,6 @@ public class EntrustPlugin extends Plugin {
 
             }
         }).start();
-
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Log.i("activateTokenQuick", "corre nuevo hilo para crear el identity");
-//
-//                String jsonData = null;
-//                try {
-//                    jsonData = CreateIdentity.createIdentity(serialNumber, regAddress, regPassword);
-//                    ret.put("data", jsonData);
-//                } catch (Exception e) {
-//                    Log.i("ActivateError", e.getMessage());
-//                    Log.i("ActivateError", e.getLocalizedMessage());
-//                    System.out.println("error create identity: " + e);
-//                    ret.put("error", e.getMessage());
-//                }
-//
-//                call.resolve(ret);
-//
-//            }
-//        }).start();
 
     }
 }
