@@ -8,22 +8,28 @@ FOUNDATION_EXPORT const unsigned char PluginVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <Plugin/PublicHeader.h>
 
+@interface Response : NSObject
+    @property (nonatomic, strong) NSString *response;
+    @property (nonatomic, strong) NSString *error;
+    @property (nonatomic, strong) NSArray<NSMutableDictionary *> *log;
+@end
+
 @interface CreateIdentityQuickOnline : NSObject
 
 //+ (ETIdentity *)createSoftTokenFromLaunchUrl:(NSURL *)url;
-+ (NSString *)createSoftTokenQuick:(NSString *)serialNumber
++ (Response *)createSoftTokenQuick:(NSString *)serialNumber
                                   :(NSString *)regAddress
                                   :(NSString *)regPassword;
 
 + (NSString *)getDeviceId;
-+ (NSString *)getOTP:(NSString *)jsonIdentity;
++ (Response *)getOTP:(NSString *)jsonIdentity;
 + (BOOL)initializeSDK;
 
 @end
 
 @interface OnlineTransaction : NSObject
 
-+(BOOL) handleCompleteTransation:(NSString*) jsonIdentity
++(Response *) handleCompleteTransation:(NSString*) jsonIdentity
                withResponse:(NSString*) response;
 
 @end
