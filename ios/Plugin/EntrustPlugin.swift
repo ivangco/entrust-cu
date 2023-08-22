@@ -1,6 +1,7 @@
 import Foundation
 import Capacitor
 
+
 /**
  * Please read the Capacitor iOS Plugin Development Guide
  * here: https://capacitorjs.com/docs/plugins/ios
@@ -14,10 +15,12 @@ public class EntrustPlugin: CAPPlugin {
         let jsonIdentity = call.getString("jsonIdentity");
         let optionSelected = call.getString("optionSelected");
         
-        let result: Bool = OnlineTransaction.handleCompleteTransation(jsonIdentity, withResponse: optionSelected);
-
+        let result: Response = OnlineTransaction.handleCompleteTransation(jsonIdentity, withResponse: optionSelected);
+        
         call.resolve([
-            "response": result
+            "response": result.response ?? "",
+            "error": result.error ?? "",
+            "log": result.log ?? []
         ])
     }
     
@@ -27,21 +30,25 @@ public class EntrustPlugin: CAPPlugin {
         let regAddress = call.getString("regAddress");
         let regPassword = call.getString("regPassword");
         
-        let result:String = CreateIdentityQuickOnline.createSoftTokenQuick(serialNumber, regAddress, regPassword);
+        let result:Response = CreateIdentityQuickOnline.createSoftTokenQuick(serialNumber, regAddress, regPassword);
         
-        //        retornar objeto con propiedad data
+        //retornar objeto con propiedad data
         call.resolve([
-            "data": result
+            "data": result.response ?? "",
+            "error": result.error ?? "",
+            "log": result.log ?? []
         ])
     }
     
     @objc func getTokenOTP(_ call: CAPPluginCall) {
         let dataIdentity = call.getString("jsonIdentity");
         
-        let otp:String = CreateIdentityQuickOnline.getOTP(dataIdentity);
+        let result:Response = CreateIdentityQuickOnline.getOTP(dataIdentity);
         
         call.resolve([
-            "otp": otp
+            "otp": result.response ?? "",
+            "error": result.error ?? "",
+            "log": result.log ?? []
         ])
     }
     
@@ -56,18 +63,20 @@ public class EntrustPlugin: CAPPlugin {
     @objc func getDeviceFingerprint(_ call: CAPPluginCall){
         
         print("llamada a getDeviceFingerprint - swift");
+        var deviceFingerprint:String = "";
         
         DispatchQueue.main.async {
+                
             // Crear una instancia de ViewController
             let viewController = ViewController();
             
             viewController.viewDidLoad();
             
             // Llamar al método de instancia getDeviceData
-            let deviceFingerprint = viewController.getDeviceFingerprint();
+            deviceFingerprint = viewController.getDeviceFingerprint();
                         
             call.resolve([
-                "response": deviceFingerprint as Any
+                "response": deviceFingerprint
             ]);
             
         }

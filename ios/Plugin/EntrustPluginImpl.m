@@ -23,10 +23,24 @@ CAP_PLUGIN(EntrustPlugin, "Entrust",
  * The URL here is the URL of the transaction component,
  * for example http://my.host:8445/igst
  */
-+ (NSString *)createSoftTokenQuick:(NSString *)serialNumber
++ (Response *)createSoftTokenQuick:(NSString *)serialNumber
                                   :(NSString *)regAddress
                                   :(NSString *)regPassword {
     
+    NSMutableDictionary *log1 = [NSMutableDictionary dictionary];;
+    NSMutableDictionary *log2 = [NSMutableDictionary dictionary];;
+    NSMutableDictionary *log3 = [NSMutableDictionary dictionary];;
+    
+    // Obtener la fecha y hora actual
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+    
+    // Crear una instancia de Response
+    Response *respuesta = [[Response alloc] init];
+    
+    // Asignar valores a las propiedades
+    respuesta.response = @"";
+    respuesta.error = nil;
     
     // Now create the identity using the SDK.
     ETIdentityProvider *provider = [[ETIdentityProvider alloc]
@@ -34,6 +48,11 @@ CAP_PLUGIN(EntrustPlugin, "Entrust",
     
     NSString *data = @"";
     
+    [log1 setObject:@"ok" forKey:@"estado"];
+    [log1 setObject: [formatter stringFromDate:[NSDate date]] forKey:@"fechaHora"];
+    [log1 setObject:@"createIdentityUsingRegPassword" forKey:@"metodo"];
+    [log1 setObject:[NSString stringWithFormat:@"regPassword=%@;serialNumber=%@", regPassword, serialNumber] forKey:@"parametrosEntrada"];
+        
     NSError *error = nil;
     ETIdentity *identity = [provider createIdentityUsingRegPassword:regPassword
                                                        serialNumber:serialNumber
@@ -41,9 +60,10 @@ CAP_PLUGIN(EntrustPlugin, "Entrust",
                                                        transactions:YES // Classic Txns
                                                  onlineTransactions:YES // Online Txns
                                                 offlineTransactions:YES // Offline Txns
-                                                      notifications:NO // Push Notifications
+                                                      notifications:YES // Push Notifications
                                                            callback:nil
                                                               error:&error];
+    
     
     // If identity is nil, there was an error creating the
     // identity. Check the error variable for details.
@@ -51,66 +71,101 @@ CAP_PLUGIN(EntrustPlugin, "Entrust",
     // the identity does not allow it to run on an unsecure device and
     // device is unsecure, a corresponding error will be returned.
     
-    if(identity){
+    if(error){
         
-        // call to getNewSeed method
-        [provider getNewSeed:identity callback:nil error:&error];
+        NSLog(@"error: %@", [NSString stringWithFormat:@"%ld", error.userInfo.count]);
+        NSLog(@"error: %@", error.localizedDescription);
+        NSLog(@"error: %@", [NSString stringWithFormat:@"%ld", error.code]);
         
-        NSLog(@"identity creado: %@", identity);
+        //error code
+        // 10011 - unauthorized
+        // 10007 - regpw_invalid
         
-        @try {
-            
-            // Convertir el objeto NSData a una cadena Base64
-            NSString *base64String = [identity.seed base64EncodedStringWithOptions:0];
-            
-            // 1. Convertir el objeto ETIdentity a un diccionario
-            NSDictionary *identityDictionary = @{
-                @"seed": base64String,
-                @"identityId": nonNullValue(identity.identityId, @""),
-                @"deviceId": nonNullValue(identity.deviceId, @""),
-                @"serialNumber": nonNullValue(identity.serialNumber, @""),
-                @"otpLength": @(identity.otpLength),
-                @"pinRequired": @(identity.pinRequired),
-                @"registrationCode": nonNullValue(identity.registrationCode, @""),
-                @"registeredForTransactions": @(identity.registeredForTransactions),
-                @"registeredForOnlineTransactions": @(identity.registeredForOnlineTransactions),
-                @"registeredForOfflineTransactions": @(identity.registeredForOfflineTransactions),
-                @"registeredForNotifications": @(identity.registeredForNotifications),
-                @"securityPolicyEnabled": @(identity.securityPolicyEnabled),
-                @"allowUnsecuredDevice": @(identity.allowUnsecuredDevice),
-                @"isPreviousAPI": @(identity.isPreviousAPI),
-                @"allowFaceRecognition": nonNullValue(identity.allowFaceRecognition, @NO),
-                @"transactionUrl": regAddress
-            };
-            
-            // 2. Convertir el diccionario a JSON
-            NSError *error;
-            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:identityDictionary
-                                                               options:NSJSONWritingPrettyPrinted
-                                                                 error:&error];
-            
-            //            // Código que podría lanzar una excepción
-            //            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:identity options:0 error:&error];
-            
-            if (jsonData) {
-                
-                // La codificación a JSON fue exitosa
-                data = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-                NSLog(@"JSON codificado: %@", data);
-                
-            } else {
-                NSLog(@"Error converting to JSON: %@", error);
-            }
-            
-        }
-        @catch (NSException *exception) {
-            // Manejo de la excepción
-            NSLog(@"Excepción capturada: %@", exception);
-        }
+        NSString *errorMessage = error.code == 10007 ? @"REGPW_INVALID" : @"UNAUTHORIZED";
+        respuesta.error = errorMessage;
         
+        [log1 setObject:@"error" forKey:@"estado"];
+        [log1 setObject:error.localizedDescription forKey:@"mensaje"];
+        
+        respuesta.log = @[log1];
+        
+        return respuesta;
     }
     
-    return data;
+    [log2 setObject:@"ok" forKey:@"estado"];
+    [log2 setObject: [formatter stringFromDate:[NSDate date]] forKey:@"fechaHora"];
+    [log2 setObject:@"getNewSeed" forKey:@"metodo"];
+    
+    // call to getNewSeed method
+    [provider getNewSeed:identity callback:nil error:&error];
+    
+    NSLog(@"identity creado: %@", identity);
+
+    if(error){
+        
+        [log2 setObject:@"error" forKey:@"estado"];
+        [log2 setObject:error.localizedDescription forKey:@"mensaje"];
+        
+        respuesta.error = error.localizedDescription;
+        respuesta.log = @[log1,log2];
+        
+        return respuesta;
+    }
+    
+    // Convertir el objeto NSData a una cadena Base64
+    NSString *base64String = [identity.seed base64EncodedStringWithOptions:0];
+    
+    // 1. Convertir el objeto ETIdentity a un diccionario
+    NSDictionary *identityDictionary = @{
+        @"seed": nonNullValue(base64String, @""),
+        @"identityId": nonNullValue(identity.identityId, @""),
+        @"deviceId": nonNullValue(identity.deviceId, @""),
+        @"serialNumber": nonNullValue(identity.serialNumber, @""),
+        @"otpLength": @(identity.otpLength),
+        @"pinRequired": @(identity.pinRequired),
+        @"registrationCode": nonNullValue(identity.registrationCode, @""),
+        @"registeredForTransactions": @(identity.registeredForTransactions),
+        @"registeredForOnlineTransactions": @(identity.registeredForOnlineTransactions),
+        @"registeredForOfflineTransactions": @(identity.registeredForOfflineTransactions),
+        @"registeredForNotifications": @(identity.registeredForNotifications),
+        @"securityPolicyEnabled": @(identity.securityPolicyEnabled),
+        @"allowUnsecuredDevice": @(identity.allowUnsecuredDevice),
+        @"isPreviousAPI": @(identity.isPreviousAPI),
+        @"allowFaceRecognition": nonNullValue(identity.allowFaceRecognition, @NO),
+        @"transactionUrl": regAddress
+    };
+    
+    // 2. Convertir el diccionario a JSON
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:identityDictionary
+                                                       options:NSJSONWritingPrettyPrinted
+                                                         error:&error];
+    
+    [log3 setObject:@"ok" forKey:@"estado"];
+    [log3 setObject: [formatter stringFromDate:[NSDate date]] forKey:@"fechaHora"];
+    [log3 setObject:@"dataWithJSONObject" forKey:@"metodo"];
+    
+    if (jsonData) {
+        
+        // La codificación a JSON fue exitosa
+        data = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        NSLog(@"JSON codificado: %@", data);
+        
+    } else {
+        
+        NSLog(@"Error converting to JSON: %@", error);
+        
+        [log3 setObject:@"error" forKey:@"estado"];
+        [log3 setObject:error.localizedDescription forKey:@"mensaje"];
+
+        respuesta.error = error.localizedDescription;
+        respuesta.log = @[log1,log2,log3];
+        
+        return respuesta;
+    }
+    
+    respuesta.response = data;
+    
+    return respuesta;
     
 }
 
@@ -137,12 +192,27 @@ static id nonNullValue(id value, id defaultValue) {
 }
 
 
-+ (NSString *)getOTP:(NSString *)jsonString {
++ (Response *)getOTP:(NSString *)jsonString {
+    
+    NSMutableDictionary *log1 = [NSMutableDictionary dictionary];
+    
+    // Obtener la fecha y hora actual
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+    
+    // Crear una instancia de Response
+    Response *respuesta = [[Response alloc] init];
     
     NSString *data = @"";
     
     // 1. Convertir la cadena JSON en un objeto NSData
     NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    
+    [log1 setObject:@"ok" forKey:@"estado"];
+    [log1 setObject: [formatter stringFromDate:[NSDate date]] forKey:@"fechaHora"];
+    [log1 setObject:@"JSONObjectWithData" forKey:@"metodo"];
+    [log1 setObject:[NSString stringWithFormat:@"jsonData=%@", jsonData] forKey:@"parametrosEntrada"];
+
     
     // 2. Decodificar el NSData y obtener el diccionario
     NSError *error;
@@ -150,8 +220,19 @@ static id nonNullValue(id value, id defaultValue) {
                                                                        options:NSJSONReadingMutableContainers
                                                                          error:&error];
     
-    if (!identityDictionary) {
+    if (error) {
+        
         NSLog(@"Error al decodificar JSON: %@", error.localizedDescription);
+
+        respuesta.error = error.localizedDescription;
+        
+        [log1 setObject:@"ok" forKey:@"estado"];
+        [log1 setObject:error.localizedDescription forKey:@"mensaje"];
+        
+        respuesta.log = @[log1];
+        
+        return respuesta;
+        
     } else {
         
         // Obtener el objeto NSData original a partir de la cadena Base64
@@ -183,27 +264,9 @@ static id nonNullValue(id value, id defaultValue) {
         
     }
     
+    respuesta.response = data;
     
-    //    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-    //
-    //    NSError *error = nil;
-    //    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
-    //
-    //    if (error != nil) {
-    //        // Ocurrió un error durante la decodificación del JSON
-    //        NSLog(@"Error al decodificar el JSON: %@", error.localizedDescription);
-    //    } else {
-    //        // La decodificación del JSON fue exitosa
-    //        ETIdentity *identity = (ETIdentity *)jsonDict; // Casting a la clase ETIdentity
-    //        NSLog(@"Objeto decodificado: %@", identity);
-    //
-    //        if (identity.allowUnsecuredDevice || [ETSoftTokenSDK isDeviceSecure]) {
-    //            data = [identity getOTP:[NSDate date]];
-    //        }
-    //
-    //    }
-    
-    return data;
+    return respuesta;
 }
 
 + (NSData *) encryptIdentity:(ETIdentity *)identity {
@@ -225,6 +288,10 @@ static id nonNullValue(id value, id defaultValue) {
 }
 
 + (BOOL) initializeSDK{
+    [ETSoftTokenSDK setApplicationId:@"com.universitariacooperativa.cu24mobile06052019"];
+    [ETSoftTokenSDK setApplicationVersion:@"1.0.0"];
+    [ETSoftTokenSDK setApplicationScheme:@"cu"];
+    
     BOOL wasReset = [ETSoftTokenSDK initializeSDK];
     return wasReset;
 }
@@ -295,14 +362,29 @@ static id nonNullValue(id value, id defaultValue) {
                                        error:&error];
 }
 
-+(BOOL) handleCompleteTransation:(NSString*) jsonIdentity
++(Response *) handleCompleteTransation:(NSString*) jsonIdentity
                     withResponse:(NSString*) response {
     
+    NSMutableDictionary *log1 = [NSMutableDictionary dictionary];
+    NSMutableDictionary *log2 = [NSMutableDictionary dictionary];
+    NSMutableDictionary *log3 = [NSMutableDictionary dictionary];
+    NSMutableDictionary *log4 = [NSMutableDictionary dictionary];
+
+    // Obtener la fecha y hora actual
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
     
-    NSString *data = @"";
+    // Crear una instancia de Response
+    Response *respuesta = [[Response alloc] init];
+    respuesta.response = false;
     
     // 1. Convertir la cadena JSON en un objeto NSData
     NSData *jsonData = [jsonIdentity dataUsingEncoding:NSUTF8StringEncoding];
+    
+    [log1 setObject:@"ok" forKey:@"estado"];
+    [log1 setObject: [formatter stringFromDate:[NSDate date]] forKey:@"fechaHora"];
+    [log1 setObject:@"JSONObjectWithData" forKey:@"metodo"];
+    [log1 setObject:[NSString stringWithFormat:@"jsonData=%@", jsonData] forKey:@"parametrosEntrada"];
     
     // 2. Decodificar el NSData y obtener el diccionario
     NSError *error;
@@ -310,56 +392,146 @@ static id nonNullValue(id value, id defaultValue) {
                                                                        options:NSJSONReadingMutableContainers
                                                                          error:&error];
     
-    if (!identityDictionary) {
+    if (error) {
+        
         NSLog(@"Error al decodificar JSON: %@", error.localizedDescription);
-    } else {
         
-        // Obtener el objeto NSData original a partir de la cadena Base64
-        NSData *originalData = [[NSData alloc] initWithBase64EncodedString:identityDictionary[@"seed"] options:0];
+        respuesta.error = error.localizedDescription;
         
-        // 3. Crear un nuevo objeto ETIdentity utilizando el diccionario
-        ETIdentity *newIdentity = [[ETIdentity alloc] init];
-        newIdentity.seed = originalData;
-        newIdentity.identityId = identityDictionary[@"identityId"];
-        newIdentity.deviceId = identityDictionary[@"deviceId"];
-        newIdentity.serialNumber = identityDictionary[@"serialNumber"];
-        newIdentity.otpLength = [identityDictionary[@"otpLength"] intValue];
-        newIdentity.pinRequired = [identityDictionary[@"pinRequired"] boolValue];
-        newIdentity.registrationCode = identityDictionary[@"registrationCode"];
-        newIdentity.registeredForTransactions = [identityDictionary[@"registeredForTransactions"] boolValue];
-        newIdentity.registeredForOnlineTransactions = [identityDictionary[@"registeredForOnlineTransactions"] boolValue];
-        newIdentity.registeredForOfflineTransactions = [identityDictionary[@"registeredForOfflineTransactions"] boolValue];
-        newIdentity.registeredForNotifications = [identityDictionary[@"registeredForNotifications"] boolValue];
-        newIdentity.securityPolicyEnabled = [identityDictionary[@"securityPolicyEnabled"] boolValue];
-        newIdentity.allowUnsecuredDevice = [identityDictionary[@"allowUnsecuredDevice"] boolValue];
-        newIdentity.isPreviousAPI = [identityDictionary[@"isPreviousAPI"] boolValue];
-        //        newIdentity.allowFaceRecognition = identityDictionary[@"allowFaceRecognition"];
+        [log1 setObject:@"error" forKey:@"estado"];
+        [log1 setObject:error.localizedDescription forKey:@"mensaje"];
         
-        // Ahora "newIdentity" contiene el objeto ETIdentity reconstruido desde el JSON.
+        respuesta.log = @[log1];
         
-        NSString *url = @"https://universitaria.us.trustedauth.com/api/mobile";
+        return respuesta;
         
-        ETTransaction *transaction = [self fetchForIdentity: newIdentity
-                                            fromUrl: url];
-        
-        
-        ETTransactionResponse transactionResponse = ([response isEqualToString:@"CONFIRM"]) ? ETTransactionResponseConfirm : ETTransactionResponseCancel ;
-        
-        if (transaction) {
+    }
             
-            return [self completeTransaction: transaction
-                           forIdentity: newIdentity
-                                withResponse: transactionResponse
-                                 andUrl: url];
-            
-        }
+    // Obtener el objeto NSData original a partir de la cadena Base64
+    NSData *originalData = [[NSData alloc] initWithBase64EncodedString:identityDictionary[@"seed"] options:0];
+    
+    // 3. Crear un nuevo objeto ETIdentity utilizando el diccionario
+    ETIdentity *newIdentity = [[ETIdentity alloc] init];
+    newIdentity.seed = originalData;
+    newIdentity.identityId = identityDictionary[@"identityId"];
+    newIdentity.deviceId = identityDictionary[@"deviceId"];
+    newIdentity.serialNumber = identityDictionary[@"serialNumber"];
+    newIdentity.otpLength = [identityDictionary[@"otpLength"] intValue];
+    newIdentity.pinRequired = [identityDictionary[@"pinRequired"] boolValue];
+    newIdentity.registrationCode = identityDictionary[@"registrationCode"];
+    newIdentity.registeredForTransactions = [identityDictionary[@"registeredForTransactions"] boolValue];
+    newIdentity.registeredForOnlineTransactions = [identityDictionary[@"registeredForOnlineTransactions"] boolValue];
+    newIdentity.registeredForOfflineTransactions = [identityDictionary[@"registeredForOfflineTransactions"] boolValue];
+    newIdentity.registeredForNotifications = [identityDictionary[@"registeredForNotifications"] boolValue];
+    newIdentity.securityPolicyEnabled = [identityDictionary[@"securityPolicyEnabled"] boolValue];
+    newIdentity.allowUnsecuredDevice = [identityDictionary[@"allowUnsecuredDevice"] boolValue];
+    newIdentity.isPreviousAPI = [identityDictionary[@"isPreviousAPI"] boolValue];
+    //        newIdentity.allowFaceRecognition = identityDictionary[@"allowFaceRecognition"];
+    
+    // Ahora "newIdentity" contiene el objeto ETIdentity reconstruido desde el JSON.
+    
+    NSString *url = @"https://universitaria.us.trustedauth.com/api/mobile";
+        
+    // FETCH TRANSACTIONS FOR IDENTITY
+    ETIdentityProvider *provider = [[ETIdentityProvider alloc] initWithURLString:url];
+    
+    [log2 setObject:@"ok" forKey:@"estado"];
+    [log2 setObject: [formatter stringFromDate:[NSDate date]] forKey:@"fechaHora"];
+    [log2 setObject:@"if(!newIdentity.allowUnsecuredDevice && ![ETSoftTokenSDK isDeviceSecure])" forKey:@"metodo"];
+    [log2 setObject:[NSString stringWithFormat:@"allowUnsecuredDevice=%d;isDeviceSecure=%d",
+                     newIdentity.allowUnsecuredDevice, [ETSoftTokenSDK isDeviceSecure] ] forKey:@"parametrosEntrada"];
+
+    if (!newIdentity.allowUnsecuredDevice && ![ETSoftTokenSDK isDeviceSecure]){
+        
+        NSLog(@"Error: device is not secure");
+        
+        respuesta.error = @"ACTIVATION_NOT_ALLOWED";
+        
+        [log2 setObject:@"error" forKey:@"estado"];
+        [log2 setObject:@"ACTIVATION_NOT_ALLOWED" forKey:@"mensaje"];
+        
+        respuesta.log = @[log1,log2];
+        
+        return respuesta;
         
     }
     
-    return false;
+    [log3 setObject:@"ok" forKey:@"estado"];
+    [log3 setObject: [formatter stringFromDate:[NSDate date]] forKey:@"fechaHora"];
+    [log3 setObject:@"getTransaction" forKey:@"metodo"];
+        
+    ETTransaction *transaction = [provider poll:newIdentity callback:nil error:&error];
+    
+    if(error){
+        
+        NSLog(@"Error: %@", error);
+        
+        respuesta.error = error.localizedDescription;
+        
+        [log3 setObject:@"error" forKey:@"estado"];
+        [log3 setObject:error.localizedDescription forKey:@"mensaje"];
+        
+        respuesta.log = @[log1,log2,log3];
+        
+        return respuesta;
+        
+    }else if(!transaction){
+        
+        NSLog(@"Error: not exists transactions");
+        
+        respuesta.error = @"NOT_EXISTS_TRANSACTION";
+        
+        [log3 setObject:@"error" forKey:@"estado"];
+        [log3 setObject:@"NOT_EXISTS_TRANSACTION" forKey:@"mensaje"];
+        
+        respuesta.log = @[log1,log2,log3];
+        
+        return respuesta;
+        
+    }
+    
+    ETTransactionResponse transactionResponse = ([response isEqualToString:@"CONFIRM"])
+                                                ? ETTransactionResponseConfirm
+                                                : ETTransactionResponseCancel ;
+    
+    [log4 setObject:@"ok" forKey:@"estado"];
+    [log4 setObject: [formatter stringFromDate:[NSDate date]] forKey:@"fechaHora"];
+    [log4 setObject:@"authenticateTransaction" forKey:@"metodo"];
+        
+    // Sends the response back to Entrust IdentityGuard
+    // and returns whether it was successful.
+    // If unsuccessful, check the error parameter for
+    // details.
+    BOOL authenticateResult = [provider authenticateTransaction:transaction
+                                forIdentity:newIdentity
+                                withResponse:transactionResponse
+                                callback:nil
+                                error:&error];
+            
+    if(error){
+        
+        NSLog(@"Error al decodificar JSON: %@", error.localizedDescription);
+        
+        respuesta.error = error.localizedDescription;
+        
+        [log4 setObject:@"error" forKey:@"estado"];
+        [log4 setObject:error.localizedDescription forKey:@"mensaje"];
+        
+        respuesta.log = @[log1, log2, log3, log4];
+        
+        return respuesta;
+        
+    }
+    
+    respuesta.response = @(authenticateResult).stringValue;
+    
+    return respuesta;
     
 }
 
+@end
+
+@implementation Response
 @end
 
 @implementation ViewController
@@ -369,41 +541,13 @@ static id nonNullValue(id value, id defaultValue) {
 }
 
 - (void)viewDidLoad{
-    
      [super viewDidLoad];
-        
      ETDFDeviceFingerprint *fingerprint = [[ETDFDeviceFingerprint alloc] init];
      self->deviceData = [fingerprint generateDeviceData];
-    
-     NSMutableDictionary *jsonDict = [NSJSONSerialization
-    JSONObjectWithData:[deviceData dataUsingEncoding:NSUTF8StringEncoding]
-    options:kNilOptions error:nil];
 }
 
 -(NSString*) getDeviceFingerprint {
     return self->deviceData;
 }
-
-//+(NSString*) getDeviceFingerprint {
-//
-//    NSString *deviceData = @"";
-//
-//    @try {
-//
-//
-//        ETDFDeviceFingerprint *fingerprint = [[ETDFDeviceFingerprint alloc] init];
-//        deviceData = [fingerprint generateDeviceData];
-//
-////        NSMutableDictionary *jsonDict = [NSJSONSerialization
-////                                         JSONObjectWithData:[deviceData dataUsingEncoding:NSUTF8StringEncoding]
-////                                         options:kNilOptions error:nil];
-//
-//    }@catch (NSException *exception) {
-//        // Manejo de la excepción
-//        NSLog(@"Excepción capturada: %@", exception);
-//    }
-//
-//    return deviceData;
-//}
 
 @end
