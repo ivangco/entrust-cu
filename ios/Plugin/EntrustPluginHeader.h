@@ -31,6 +31,8 @@ FOUNDATION_EXPORT const unsigned char PluginVersionString[];
 
 +(Response *) handleCompleteTransation:(NSString*) jsonIdentity
                withResponse:(NSString*) response;
++ (Response *) handleGetTransaction:(NSString*) jsonIdentity;
+
 
 @end
 

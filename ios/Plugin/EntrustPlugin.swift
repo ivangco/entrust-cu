@@ -24,6 +24,19 @@ public class EntrustPlugin: CAPPlugin {
         ])
     }
     
+    @objc func getTransaction(_ call: CAPPluginCall) {
+        
+        let jsonIdentity = call.getString("jsonIdentity");
+        
+        let result: Response = OnlineTransaction.handleGet(jsonIdentity);
+        
+        call.resolve([
+            "response": result.response ?? "",
+            "error": result.error ?? "",
+            "log": result.log ?? []
+        ])
+    }
+    
     @objc func activateTokenQuick(_ call: CAPPluginCall) {
         
         let serialNumber = call.getString("serialNumber");
