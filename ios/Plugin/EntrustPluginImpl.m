@@ -289,7 +289,7 @@ static id nonNullValue(id value, id defaultValue) {
 
 + (BOOL) initializeSDK{
     [ETSoftTokenSDK setApplicationId:@"com.universitariacooperativa.cu24mobile06052019"];
-    [ETSoftTokenSDK setApplicationVersion:@"1.0.0"];
+    [ETSoftTokenSDK setApplicationVersion:@"0.0.112"];
     [ETSoftTokenSDK setApplicationScheme:@"cu"];
     
     BOOL wasReset = [ETSoftTokenSDK initializeSDK];
@@ -461,6 +461,7 @@ static id nonNullValue(id value, id defaultValue) {
     [log3 setObject:@"getTransaction" forKey:@"metodo"];
         
     ETTransaction *transaction = [provider poll:newIdentity callback:nil error:&error];
+
     
     if(error){
         
@@ -488,6 +489,21 @@ static id nonNullValue(id value, id defaultValue) {
         
         return respuesta;
         
+    }
+    
+    NSLog(@"identityId: %@", transaction.identityId);
+    NSLog(@"transactionId: %@", transaction.transactionId);
+    NSLog(@"date: %@", transaction.date);
+    NSLog(@"details: %@", transaction.details);
+    NSLog(@"summary: %@", transaction.summary);
+    NSLog(@"appName: %@", transaction.appName);
+    NSLog(@"userId: %@", transaction.userId);
+    NSLog(@"priority: %@", transaction.priority);
+    NSLog(@"lifetime: %@", transaction.lifetime);
+    NSLog(@"queued: %d", transaction.queued);
+
+    for (NSString *detail in transaction.details) {
+        NSLog(@"Detail: %@", detail);
     }
     
     ETTransactionResponse transactionResponse = ([response isEqualToString:@"CONFIRM"])
