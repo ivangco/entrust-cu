@@ -3,6 +3,9 @@ import { WebPlugin } from '@capacitor/core';
 import type { EntrustPlugin, ActivationParams, DeviceFingerprint, ActivationError, ObjectLog, CompleteParams } from './definitions';
 
 export class EntrustWeb extends WebPlugin implements EntrustPlugin {
+  getTransaction(data: { jsonIdentity: string; }): Promise<{ response: boolean; error: string; log: ObjectLog[]; }> {
+    throw new Error('Method not implemented.'+data);
+  }
   getDeviceFingerprint(): Promise<{ response: DeviceFingerprint; error: string; log: ObjectLog[]; }> {
     throw new Error('Method not implemented.');
   }

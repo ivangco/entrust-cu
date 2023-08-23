@@ -51,4 +51,5 @@ export interface EntrustPlugin {
   initializeSDK(): Promise<{ response: boolean }>
   completeChallenge(option: CompleteParams): Promise<{ response: boolean, error: string, log: ObjectLog[] }>
   getDeviceFingerprint(): Promise<{ response: DeviceFingerprint, error: string, log: ObjectLog[] }>
+  getTransaction(data: { jsonIdentity:string }): Promise<{ response: boolean, error:string, log: ObjectLog[] }>
 }
