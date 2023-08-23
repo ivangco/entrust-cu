@@ -18,6 +18,7 @@ npx cap sync
 * [`initializeSDK()`](#initializesdk)
 * [`completeChallenge(...)`](#completechallenge)
 * [`getDeviceFingerprint()`](#getdevicefingerprint)
+* [`getTransaction(...)`](#gettransaction)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -89,6 +90,21 @@ getDeviceFingerprint() => Promise<{ response: DeviceFingerprint; error: string; 
 ```
 
 **Returns:** <code>Promise&lt;{ response: <a href="#devicefingerprint">DeviceFingerprint</a>; error: string; log: ObjectLog[]; }&gt;</code>
+
+--------------------
+
+
+### getTransaction(...)
+
+```typescript
+getTransaction(data: { jsonIdentity: string; }) => Promise<{ response: boolean; error: string; log: ObjectLog[]; }>
+```
+
+| Param      | Type                                   |
+| ---------- | -------------------------------------- |
+| **`data`** | <code>{ jsonIdentity: string; }</code> |
+
+**Returns:** <code>Promise&lt;{ response: boolean; error: string; log: ObjectLog[]; }&gt;</code>
 
 --------------------
 
