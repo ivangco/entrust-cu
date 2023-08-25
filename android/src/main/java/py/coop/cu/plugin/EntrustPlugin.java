@@ -75,6 +75,58 @@ public class EntrustPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void getTransaction(PluginCall call) {
+
+        String jsonIdentity = call.getString("jsonIdentity");
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ObjectLog objectLog = new ObjectLog();
+                List<ObjectLog> objectLogList = new ArrayList<>();
+                JSObject ret = new JSObject();
+
+                try {
+
+                    objectLog.setMetodo("CreateIdentity.createIdentityFromJson");
+                    objectLog.setParametrosEntrada("jsonIdentity=" + jsonIdentity);
+                    CreateIdentity.createIdentityFromJson(jsonIdentity);
+                    objectLogList.add(objectLog);
+
+                    objectLog = new ObjectLog();
+                    objectLog.setMetodo("OnlineTransactions.fetchTransaction");
+                    Boolean responseFetch = OnlineTransactions.fetchTransaction();
+                    objectLog.setRespuestaSalida(responseFetch.toString());
+                    objectLogList.add(objectLog);
+
+                    ret.put("response", responseFetch);
+
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+
+                    objectLog.setEstado("error");
+                    objectLog.setMensaje(e.getMessage());
+                    objectLogList.add(objectLog);
+
+                    ret.put("error", e.getMessage());
+
+                    Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+                    String jsonError = gson.toJson(objectLogList);
+
+                    ret.put("log", jsonError);
+
+                }
+
+                call.resolve(ret);
+
+            }
+
+        }).start();
+
+    }
+
+    @PluginMethod
     public void completeChallenge(PluginCall call) {
 
         String jsonIdentity = call.getString("jsonIdentity");
