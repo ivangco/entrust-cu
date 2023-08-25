@@ -30,9 +30,9 @@ public class CreateIdentity {
 
     public static Identity createdIdentity = null;
 
-    public static void initialize(Context context) {
-        PlatformDelegate.setApplicationId("io.ionic.starter");
-        PlatformDelegate.setApplicationVersion("1.0");
+    public static void initialize(Context context, String appId, String appVersion) {
+        PlatformDelegate.setApplicationId(appId);
+        PlatformDelegate.setApplicationVersion(appVersion);
         PlatformDelegate.setApplicationScheme("cu");
 
         PlatformDelegate.initialize(context);

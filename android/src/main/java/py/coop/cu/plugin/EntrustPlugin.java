@@ -27,8 +27,12 @@ public class EntrustPlugin extends Plugin {
 
     @PluginMethod
     public void initializeSDK(PluginCall call) {
+
+        String appId = call.getString("appId");
+        String appVersion = call.getString("appVersion");
+
         Context context = this.getActivity().getApplicationContext();
-        CreateIdentity.initialize(context);
+        CreateIdentity.initialize(context, appId, appVersion);
 
         JSObject ret = new JSObject();
         ret.put("response", true);
