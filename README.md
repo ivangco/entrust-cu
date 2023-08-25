@@ -15,7 +15,7 @@ npx cap sync
 
 * [`activateTokenQuick(...)`](#activatetokenquick)
 * [`getTokenOTP(...)`](#gettokenotp)
-* [`initializeSDK()`](#initializesdk)
+* [`initializeSDK(...)`](#initializesdk)
 * [`completeChallenge(...)`](#completechallenge)
 * [`getDeviceFingerprint()`](#getdevicefingerprint)
 * [`getTransaction(...)`](#gettransaction)
@@ -57,11 +57,15 @@ getTokenOTP(data: { jsonIdentity: string; }) => Promise<{ otp: string; error: st
 --------------------
 
 
-### initializeSDK()
+### initializeSDK(...)
 
 ```typescript
-initializeSDK() => Promise<{ response: boolean; }>
+initializeSDK({ appId, appVersion }: { appId: string; appVersion: string; }) => Promise<{ response: boolean; }>
 ```
+
+| Param     | Type                                                |
+| --------- | --------------------------------------------------- |
+| **`__0`** | <code>{ appId: string; appVersion: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ response: boolean; }&gt;</code>
 
