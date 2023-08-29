@@ -34,7 +34,7 @@ CAP_PLUGIN(EntrustPlugin, "Entrust",
     
     // Obtener la fecha y hora actual
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+    formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss-0400";
     
     // Crear una instancia de Response
     Response *respuesta = [[Response alloc] init];
@@ -199,7 +199,7 @@ static id nonNullValue(id value, id defaultValue) {
     
     // Obtener la fecha y hora actual
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+    formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss-0400";
     
     // Crear una instancia de Response
     Response *respuesta = [[Response alloc] init];
@@ -288,9 +288,9 @@ static id nonNullValue(id value, id defaultValue) {
     return [NSKeyedUnarchiver unarchiveObjectWithData:serialized];
 }
 
-+ (BOOL) initializeSDK{
-    [ETSoftTokenSDK setApplicationId:@"com.universitariacooperativa.cu24mobile06052019"];
-    [ETSoftTokenSDK setApplicationVersion:@"0.0.112"];
++ (BOOL)initializeSDKWithAppId:(NSString *)appId appVersion:(NSString *)appVersion {
+    [ETSoftTokenSDK setApplicationId:appId];
+    [ETSoftTokenSDK setApplicationVersion:appVersion];
     [ETSoftTokenSDK setApplicationScheme:@"cu"];
     
     BOOL wasReset = [ETSoftTokenSDK initializeSDK];
@@ -373,7 +373,7 @@ static id nonNullValue(id value, id defaultValue) {
 
     // Obtener la fecha y hora actual
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+    formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss-0400";
     
     // Crear una instancia de Response
     Response *respuesta = [[Response alloc] init];
@@ -554,7 +554,7 @@ static id nonNullValue(id value, id defaultValue) {
 
     // Obtener la fecha y hora actual
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+    formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss-0400";
     
     // Crear una instancia de Response
     Response *respuesta = [[Response alloc] init];
