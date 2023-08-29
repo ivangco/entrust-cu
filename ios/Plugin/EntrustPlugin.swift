@@ -28,6 +28,8 @@ public class EntrustPlugin: CAPPlugin {
         
         let jsonIdentity = call.getString("jsonIdentity");
         
+        print("jsonIdentity -> \(jsonIdentity ?? "")")
+        
         let result: Response = OnlineTransaction.handleGet(jsonIdentity);
         
         call.resolve([
@@ -66,8 +68,12 @@ public class EntrustPlugin: CAPPlugin {
     }
     
     @objc func initializeSDK(_ call: CAPPluginCall){
+        
+        let appId = call.getString("appId");
+        let appVersion = call.getString("appVersion");
+        
         print("llamada a initialize sdk desde swift...")
-        let response:Bool = CreateIdentityQuickOnline.initializeSDK();
+        let response:Bool = CreateIdentityQuickOnline.initializeSDK(withAppId:appId , appVersion:appVersion );
         call.resolve([
             "response": response
         ])
