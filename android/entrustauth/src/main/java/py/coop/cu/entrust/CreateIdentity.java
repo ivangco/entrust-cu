@@ -43,19 +43,6 @@ public class CreateIdentity {
 
         DeviceFingerprint deviceFingerprint = new DeviceFingerprint();
         deviceFingerprint.init(context);
-
-        final DeviceAttributeRegistry registry =
-                DeviceAttributeRegistry.getInstance(context);
-
-        List<DeviceAttribute> allAttributes =
-                DeviceAttributeRegistry.getAllPossibleSdkSyncrhonousDeviceAttributes();
-        for (DeviceAttribute attribute : allAttributes) {
-            if (!registry.addCustomDeviceAttribute(attribute, true, false)) {
-                Log.w("DeviceFingerprintSample",
-                        "Insufficient permissions for attribute: " + attribute.getName());
-            }
-        }
-
         JSONObject data = deviceFingerprint.generateDeviceData();
         return data.toString();
 
