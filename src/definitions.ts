@@ -3,15 +3,22 @@ export interface ActivationParams {
 }
 
 export interface DeviceFingerprint {
+  platform: string;
+  version: string;
+  attributes: Attributes;
+}
+
+interface Attributes {
   simCountry: string;
+  allowUnknownSources: boolean;
   appVersion: string;
   screenWidth: number;
+  mobileCountryCode: string;
+  mobileNetworkCode: string;
   timezone: string;
-  locationAreaCode: number;
-  timezoneOffsetString: string;
+  screenHeight: number;
   locale: string;
   deviceId: string;
-  connectionType: string;
   platform: string;
   manufacturer: string;
   deviceUnsecure: boolean;
@@ -19,14 +26,8 @@ export interface DeviceFingerprint {
   osVersion: string;
   timezoneOffset: number;
   model: string;
-  allowUnknownSources: boolean;
-  mobileCountryCode: string;
-  mobileNetworkCode: string;
-  screenHeight: number;
-  cellId: string;
-  primaryScramblingCode: number;
   screenDensity: number;
-  btName: string;
+  modelName:string;
 }
 
 export interface ObjectLog {
@@ -50,6 +51,6 @@ export interface EntrustPlugin {
   getTokenOTP(data: { jsonIdentity: string }): Promise<{ otp: string, error: string, log: ObjectLog[] }>
   initializeSDK({ appId, appVersion }: { appId: string, appVersion: string }): Promise<{ response: boolean }>
   completeChallenge(option: CompleteParams): Promise<{ response: boolean, error: string, log: ObjectLog[] }>
-  getDeviceFingerprint(): Promise<{ response: DeviceFingerprint, error: string, log: ObjectLog[] }>
+  getDeviceFingerprint(): Promise<{ response: string, error: string, log: ObjectLog[] }>
   getTransaction(data: { jsonIdentity: string }): Promise<{ response: boolean, error: string, log: ObjectLog[] }>
 }
