@@ -53,4 +53,5 @@ export interface EntrustPlugin {
   completeChallenge(option: CompleteParams): Promise<{ response: boolean, error: string, log: ObjectLog[] }>
   getDeviceFingerprint(): Promise<{ response: string, error: string, log: ObjectLog[] }>
   getTransaction(data: { jsonIdentity: string }): Promise<{ response: boolean, error: string, log: ObjectLog[] }>
+  isDeveloperModeEnabled(): Promise<{ response: boolean }>
 }

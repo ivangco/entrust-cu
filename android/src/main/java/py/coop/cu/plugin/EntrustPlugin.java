@@ -3,6 +3,8 @@ package py.coop.cu.plugin;
 import android.content.Context;
 import android.util.Log;
 
+import android.provider.Settings;
+
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -19,6 +21,8 @@ import java.util.List;
 import py.coop.cu.entrust.ObjectLog;
 import py.coop.cu.entrust.OnlineTransactions;
 import py.coop.cu.entrust.CreateIdentity;
+
+
 
 @CapacitorPlugin(name = "Entrust")
 public class EntrustPlugin extends Plugin {
@@ -39,6 +43,13 @@ public class EntrustPlugin extends Plugin {
         call.resolve(ret);
 
     }
+      @PluginMethod
+    public boolean isDeveloperModeEnabled(PluginCall call){
+        boolean valor=  Settings.Secure.getInt(
+            getContentResolver(), Settings.Global.DEVELOPMENT_SETTINGS_ENABLED,0)==1;
+              call.resolve(valor);
+    }
+
 
     @PluginMethod
     public void getDeviceFingerprint(PluginCall call) {
@@ -72,6 +83,7 @@ public class EntrustPlugin extends Plugin {
             String jsonError = gson.toJson(objectLogList);
 
             ret.put("log", jsonError);
+
 
         }
 
@@ -204,6 +216,7 @@ public class EntrustPlugin extends Plugin {
 
     }
 
+   
     @PluginMethod
     public void getTokenOTP(PluginCall call) {
 

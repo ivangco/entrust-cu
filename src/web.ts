@@ -21,4 +21,7 @@ export class EntrustWeb extends WebPlugin implements EntrustPlugin {
   initializeSDK(): Promise<{ response: boolean }> {
     throw new Error('Method not implemented.');
   }
+  getDevMode(data: { jsonIdentity: string; }): Promise<{ response: boolean }> {
+    throw new Error('Method not implemented.' + data);
+  }
 }
