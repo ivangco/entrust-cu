@@ -44,10 +44,12 @@ public class EntrustPlugin extends Plugin {
 
     }
       @PluginMethod
-    public boolean isDeveloperModeEnabled(PluginCall call){
-        boolean valor=  Settings.Secure.getInt(
-            getContentResolver(), Settings.Global.DEVELOPMENT_SETTINGS_ENABLED,0)==1;
-              call.resolve(valor);
+    public void isDeveloperModeEnabled(PluginCall call){
+        Context context = this.getActivity().getApplicationContext();
+        boolean valor = Settings.Secure.getInt(context.getContentResolver(), Settings.Global.DEVELOPMENT_SETTINGS_ENABLED,0)==1;
+        JSObject ret = new JSObject();
+        ret.put("response", valor);
+        call.resolve(ret);
     }
 
 

@@ -19,6 +19,7 @@ npx cap sync
 * [`completeChallenge(...)`](#completechallenge)
 * [`getDeviceFingerprint()`](#getdevicefingerprint)
 * [`getTransaction(...)`](#gettransaction)
+* [`isDeveloperModeEnabled()`](#isdevelopermodeenabled)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -109,6 +110,17 @@ getTransaction(data: { jsonIdentity: string; }) => Promise<{ response: boolean; 
 | **`data`** | <code>{ jsonIdentity: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ response: boolean; error: string; log: ObjectLog[]; }&gt;</code>
+
+--------------------
+
+
+### isDeveloperModeEnabled()
+
+```typescript
+isDeveloperModeEnabled() => Promise<{ response: boolean; }>
+```
+
+**Returns:** <code>Promise&lt;{ response: boolean; }&gt;</code>
 
 --------------------
 
